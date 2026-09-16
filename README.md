@@ -15,8 +15,23 @@ beliebiger Webspace).
 
 | Datei | Inhalt |
 |---|---|
-| `index.html` | Das Adventure (Canvas-Pixelgrafik, Verben, Inventar, Dialoge) |
-| `quiz.html` | Das Stationen-Quiz mit 29 Aufgaben in zehn Formaten, als schneller Wiederholungsmodus |
+| `live.html` | **Finger hoch**: fünf Fragen für fünf Minuten am Beamer, die Gruppe antwortet mit erhobenen Fingern |
+| `index.html` | Das Adventure (Canvas-Pixelgrafik, Verben, Inventar, Dialoge), etwa 30 bis 40 Minuten |
+| `quiz.html` | Das Stationen-Quiz mit 29 Aufgaben in zehn Formaten, als Wiederholung vor der Prüfung |
+
+## Fünf Minuten im Kurs: `live.html`
+
+Für die kurze Vermittlung im Team. Du wirfst die Seite an die Wand und klickst durch:
+
+1. Frage erscheint, ein Countdown von 30 Sekunden läuft.
+2. Bei null steht „Finger!“ auf dem Bildschirm: alle zeigen gleichzeitig ein bis vier Finger.
+3. Du drückst die Zahl, die die Mehrheit gezeigt hat. Die Antwort wird markiert und aufgelöst,
+   der Merksatz steht darunter.
+4. Leertaste oder Klick: nächste Frage. Am Ende die sechs Merksätze.
+
+Die fünf Fragen sind die Aha-Momente der Unterlage: Blumenkasten-Fall, Profil-Vergleich,
+Kosten der Listung, Förderantrag vor Vertrag, Stufe 1 der Ausweiskontrolle. Fragen, Antworten
+und Auflösungen stehen im `Q`-Array am Anfang des Skripts, der Countdown in `TIMER`.
 
 ## Ablauf des Abenteuers
 
