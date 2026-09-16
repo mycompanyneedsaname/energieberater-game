@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vom Zertifikat zum Projekt</title>
+<meta name="description" content="Lernspiel zu Block 8: Listung, Energieausweise, Versicherungen, Akquise, Kundengespräch, Angebot und Vor-Ort-Begehung.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#EDF2EF; --surface:#FFFFFF; --surface2:#F5F8F6; --ink:#14262A; --muted:#5A6C6E;
+  --line:#D2DCD7; --line-strong:#AEBFB8;
+  --accent:#0E6B5B; --accent-ink:#FFFFFF; --accent-soft:#DCEFE9;
+  --sun:#F2B705; --sun-ink:#2B2200; --sun-soft:#FFF3C7;
+  --ok:#237A41; --ok-bg:#DFF2E4; --bad:#BE3E33; --bad-bg:#FBE4E0;
+  --s1:#D64545; --s2:#E8772E; --s3:#E9B400; --s4:#9BBF2E; --s5:#4CA64C; --s6:#1E7A4E;
+  --shadow:0 10px 30px rgba(20,38,42,.08);
+  --r:16px; --r-sm:10px;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono:"IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0E1618; --surface:#172126; --surface2:#1E2A30; --ink:#E7EEEC; --muted:#97A8A6;
+    --line:#2A393E; --line-strong:#3F5259;
+    --accent:#4FC3A1; --accent-ink:#06201A; --accent-soft:#173630;
+    --sun:#F5C542; --sun-ink:#2B2200; --sun-soft:#3A3010;
+    --ok:#6FD48F; --ok-bg:#173A25; --bad:#F08A7E; --bad-bg:#472220;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0E1618; --surface:#172126; --surface2:#1E2A30; --ink:#E7EEEC; --muted:#97A8A6;
+  --line:#2A393E; --line-strong:#3F5259;
+  --accent:#4FC3A1; --accent-ink:#06201A; --accent-soft:#173630;
+  --sun:#F5C542; --sun-ink:#2B2200; --sun-soft:#3A3010;
+  --ok:#6FD48F; --ok-bg:#173A25; --bad:#F08A7E; --bad-bg:#472220;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+p{margin:0}
+.app{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:12px 40px;min-height:100%;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.01em}
+.brand small{display:block;font-family:var(--body);font-weight:500;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.pill{font-family:var(--mono);font-weight:600;font-size:13px;padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ribbon{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.ribbon .seg{height:10px;border-radius:6px;background:var(--line);position:relative;opacity:.55;transition:opacity .3s}
+.ribbon .seg.done{opacity:1}
+.ribbon .seg.cur{opacity:1;box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--seg)}
+.ribbon .seg[data-i="0"]{--seg:var(--s1)} .ribbon .seg[data-i="1"]{--seg:var(--s2)} .ribbon .seg[data-i="2"]{--seg:var(--s3)}
+.ribbon .seg[data-i="3"]{--seg:var(--s4)} .ribbon .seg[data-i="4"]{--seg:var(--s5)} .ribbon .seg[data-i="5"]{--seg:var(--s6)}
+.ribbon .seg.done,.ribbon .seg.cur{background:var(--seg)}
+.ribbon .seg.cur::after{content:"";position:absolute;inset:0;border-radius:6px;background:var(--seg);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:16px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.eyebrow .chip{background:var(--surface2);border:1px solid var(--line);border-radius:6px;padding:2px 8px;letter-spacing:.04em;text-transform:none;font-weight:500;color:var(--ink)}
+.eyebrow .dot{width:10px;height:10px;border-radius:50%;background:var(--seg)}
+h1.title{font-size:clamp(30px,7vw,42px);font-weight:800;letter-spacing:-.02em}
+h2.q{font-size:clamp(20px,4.6vw,24px);font-weight:700}
+.lead{color:var(--muted);font-size:17px;max-width:60ch}
+.story{background:var(--surface2);border-left:4px solid var(--sun);border-radius:var(--r-sm);padding:12px 14px;font-style:italic;max-width:65ch}
+.hint{color:var(--muted);font-size:14px}
+.btn{appearance:none;border:0;border-radius:12px;padding:14px 20px;font-weight:600;font-size:16px;cursor:pointer;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .08s ease,filter .15s}
+.btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-strong)}
+.btn.sun{background:var(--sun);color:var(--sun-ink)}
+.btn:focus-visible,.opt:focus-visible,.tile:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.row.end{justify-content:flex-end}
+
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{appearance:none;text-align:left;background:var(--surface2);border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;cursor:pointer;line-height:1.4;display:flex;gap:12px;align-items:flex-start;transition:border-color .15s,background .15s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--muted);min-width:20px;padding-top:3px}
+.opt.is-ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.is-bad{border-color:var(--bad);background:var(--bad-bg)}
+.opt.is-sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.is-missed{border-style:dashed;border-color:var(--ok)}
+.opt.is-lock{opacity:.5}
+
+.feedback{border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);background:var(--surface2)}
+.feedback.ok{background:var(--ok-bg);border-color:var(--ok)} .feedback.bad{background:var(--bad-bg);border-color:var(--bad)}
+.feedback .head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;font-family:var(--display);font-weight:700;font-size:17px}
+.feedback .pts{font-family:var(--mono);font-size:13px;font-weight:600;white-space:nowrap}
+.feedback ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.feedback .sub{font-size:14px;color:var(--ink)}
+
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bucket{appearance:none;border:2px solid var(--line-strong);background:var(--surface2);border-radius:12px;padding:16px 12px;font-weight:600;cursor:pointer;min-height:64px;line-height:1.3}
+.bucket:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft)}
+.itemcard{background:var(--surface2);border:1.5px solid var(--line);border-radius:12px;padding:18px 16px;font-size:18px;font-weight:500;min-height:88px;display:flex;align-items:center;text-wrap:balance}
+.itemcard.flash-ok{border-color:var(--ok);background:var(--ok-bg)} .itemcard.flash-bad{border-color:var(--bad);background:var(--bad-bg)}
+.log{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.log div{display:flex;gap:8px;align-items:flex-start;padding:6px 10px;border-radius:8px;background:var(--surface2)}
+.log .m{font-family:var(--mono);font-weight:600;min-width:14px}
+.log .ok .m{color:var(--ok)} .log .bad .m{color:var(--bad)}
+.counter{font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+.matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.matchgrid .col{display:flex;flex-direction:column;gap:8px}
+.tile{appearance:none;text-align:left;background:var(--surface2);border:1.5px solid var(--line);border-radius:10px;padding:10px 11px;font-size:14px;line-height:1.3;cursor:pointer;min-height:48px}
+.tile:hover:not(:disabled){border-color:var(--accent)}
+.tile.is-sel{border-color:var(--accent);background:var(--accent-soft)}
+.tile.is-done{border-color:var(--ok);background:var(--ok-bg);opacity:.75;cursor:default}
+.tile.is-num{display:flex;gap:10px;align-items:flex-start}
+.tile .n{font-family:var(--mono);font-weight:600;color:var(--accent);min-width:18px}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.seq{display:flex;flex-direction:column;gap:8px}
+.seq .step{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--ok-bg);border:1px solid var(--ok)}
+.seq .step .n{font-family:var(--mono);font-weight:600;color:var(--ok)}
+.seq .slot{padding:10px 12px;border-radius:10px;border:1.5px dashed var(--line-strong);color:var(--muted);font-size:14px}
+
+.numwrap{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
+.numwrap input{flex:1;min-width:160px;font-family:var(--mono);font-size:22px;font-weight:600;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line-strong);background:var(--surface2);color:var(--ink);font-variant-numeric:tabular-nums}
+.numwrap input:focus{outline:3px solid var(--sun);outline-offset:1px;border-color:var(--accent)}
+.calc{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-family:var(--mono);font-size:13px;background:var(--surface2);padding:12px 14px;border-radius:10px;font-variant-numeric:tabular-nums}
+.calc b{text-align:right}
+.calc .sum{border-top:1px solid var(--line-strong);padding-top:4px;margin-top:2px;font-weight:600}
+
+.chat{display:flex;flex-direction:column;gap:10px}
+.bubble{max-width:88%;padding:11px 14px;border-radius:14px;line-height:1.4;font-size:15px}
+.bubble.them{align-self:flex-start;background:var(--surface2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bubble.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:4px}
+.bubble .who{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;opacity:.7;margin-bottom:3px}
+.note{font-size:14px;padding:10px 12px;border-radius:10px;border-left:4px solid var(--line-strong);background:var(--surface2)}
+.note.ok{border-left-color:var(--ok)} .note.bad{border-left-color:var(--bad)}
+
+.doc{border:1px solid var(--line-strong);border-radius:10px;overflow:hidden;font-size:14.5px}
+.doc .dhead{background:var(--surface2);padding:10px 14px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+.doc .line{display:block;width:100%;appearance:none;background:var(--surface);border:0;border-bottom:1px solid var(--line);padding:11px 14px;text-align:left;cursor:pointer;line-height:1.4}
+.doc .line:last-child{border-bottom:0}
+.doc .line:hover:not(:disabled){background:var(--surface2)}
+.doc .line.is-sel{background:var(--sun-soft);box-shadow:inset 4px 0 0 var(--sun)}
+.doc .line.is-ok{background:var(--ok-bg);box-shadow:inset 4px 0 0 var(--ok)}
+.doc .line.is-bad{background:var(--bad-bg);box-shadow:inset 4px 0 0 var(--bad)}
+.doc .line.is-missed{box-shadow:inset 4px 0 0 var(--bad);text-decoration:underline dashed var(--bad)}
+.doc .line:disabled{cursor:default;color:var(--ink)}
+
+.profiles{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:560px){.profiles{grid-template-columns:1fr 1fr}}
+.profile{appearance:none;text-align:left;border:1.5px solid var(--line);background:var(--surface2);border-radius:12px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.profile:hover:not(:disabled){border-color:var(--accent)}
+.profile .pname{font-family:var(--display);font-weight:700;font-size:17px}
+.profile .meta{color:var(--muted);font-size:13px}
+.profile .badge{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);align-self:flex-start}
+.profile ul{margin:0;padding-left:18px}
+.profile.is-ok{border-color:var(--ok);background:var(--ok-bg)} .profile.is-bad{border-color:var(--bad);background:var(--bad-bg)}
+
+.stations{display:flex;flex-direction:column;gap:8px}
+.station{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line)}
+.station .num{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-weight:800;color:#fff;background:var(--seg);font-size:15px}
+.station .nm{font-weight:600} .station .sub{font-size:13px;color:var(--muted)}
+.station .st{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.station.cur{border-color:var(--sun);box-shadow:0 0 0 3px var(--sun-soft)}
+.station.locked{opacity:.6}
+
+.merk{display:flex;flex-direction:column;gap:10px}
+.merk .m{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:12px 14px;border-radius:12px;background:var(--sun-soft);border:1px solid color-mix(in srgb,var(--sun) 50%,transparent)}
+.merk .m .n{font-family:var(--display);font-weight:800;font-size:20px;color:var(--sun-ink);line-height:1.1}
+:root[data-theme="dark"] .merk .m .n{color:var(--sun)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .merk .m .n{color:var(--sun)}}
+.bigscore{font-family:var(--display);font-weight:800;font-size:clamp(44px,12vw,72px);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.bigscore small{font-size:.38em;font-weight:600;color:var(--muted);letter-spacing:0}
+
+.cert{border:2px solid var(--accent);border-radius:var(--r);padding:22px 20px;display:flex;flex-direction:column;gap:14px;background:var(--surface);position:relative;overflow:hidden}
+.cert::before{content:"";position:absolute;inset:6px;border:1px solid var(--line-strong);border-radius:12px;pointer-events:none}
+.cert .rank{font-family:var(--display);font-weight:800;font-size:clamp(24px,6vw,32px);color:var(--accent)}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:110px 1fr 56px;gap:10px;align-items:center;font-size:13px}
+.bar .track{height:10px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar .fill{height:100%;border-radius:6px;background:var(--seg);transition:width .6s ease}
+.bar .v{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.namein{font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line-strong);background:var(--surface2);color:var(--ink);width:100%}
+.namein:focus{outline:3px solid var(--sun);outline-offset:1px}
+label.lbl{font-size:13px;color:var(--muted);font-weight:600;display:flex;flex-direction:column;gap:6px}
+.foot{font-size:12px;color:var(--muted);text-align:center;margin-top:auto;padding-top:8px}
+.tfbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><small>Block 8 · Lernspiel</small>Vom Zertifikat zum Projekt</div>
+    <div class="pill" id="score">0 Pkt</div>
+  </header>
+  <nav class="ribbon" id="ribbon" aria-label="Fortschritt"></nav>
+  <main id="stage"></main>
+  <p class="foot">Grundlage: Zusammenfassung Paket 5, Block 8 Teil 1 (v3.0, 14.08.2026). Fortschritt wird nur in diesem Browser gespeichert.</p>
+</div>
+
+<script>
+/* ---------------- Inhalte ---------------- */
+const STATIONS = [
+{
+  key:"listung", name:"EEE-Liste", short:"Listung",
+  intro:"Der Kurs ist geschafft, das Zertifikat liegt auf dem Tisch. Bevor du auch nur einen Förderantrag stellen darfst, brauchst du den Eintrag auf der Energie-Effizienz-Experten-Liste.",
+  tasks:[
+    {type:"mc", q:"Warum ist der Eintrag auf der EEE-Liste so wichtig?",
+     options:["Er ist Voraussetzung, um überhaupt Förderanträge stellen zu können","Er ersetzt die Registrierung beim DIBt für Energieausweise","Er ist gesetzlich für alle Energieberater:innen vorgeschrieben","Er ist Voraussetzung für die Berufshaftpflicht"], answer:0,
+     explain:"Ohne Eintrag können keine Anträge gestellt werden – das ist der zentrale Punkt. Praktisch: Mit E-Mail-Adresse und Passwort der Registrierung meldest du dich später auch bei BAFA und KfW an."},
+    {type:"multi", q:"Welche zwei Dokumente brauchst du in Kombination für die Listung?",
+     options:["Erklärung des Anbietenden von Weiterbildungen (Formular der EEE-Liste)","Abschlusszeugnis einer Hochschule oder Universität","Polizeiliches Führungszeugnis","Meisterbrief","Gewerbeanmeldung"], answers:[0,1],
+     explain:"Das Formular der EEE-Liste plus das Hochschul- oder Universitätszeugnis. Anmeldung unter energie-effizienz-experten.de."},
+    {type:"number", q:"Kostenrechner: Du lässt dich für zwei Module listen, die Eintragung läuft über Referenzen, und du meldest eine Nebenadresse an. Was kostet dich das erste Jahr netto (ohne MwSt.)?",
+     unit:"€", answer:580, hint:"Denk an alle vier Posten: Prüfung je Modul, Zuschlag für Referenzen, Jahresbeitrag für zwei Module, Nebenadresse.",
+     calc:[["Prüfung 2 Module × 100 €","200 €"],["Zuschlag Eintragung über Referenzen","200 €"],["Jahresbeitrag zwei Module","170 €"],["1 Nebenadresse × 10 €","10 €"],["Summe netto","580 €"],["zzgl. 19 % MwSt.","690,20 €"]],
+     explain:"Die Listung ist eine echte Investition – und läuft jedes Jahr weiter (Jahresbeitrag 120 € für ein Modul, 170 € für zwei). Als Mitglied eines Netzwerkpartners gibt es Vergünstigungen."},
+    {type:"compare", q:"Du bist Hauseigentümer:in und suchst in der EEE-Liste nach jemandem für deine Sanierung. Welches Profil rufst du an?",
+     profiles:[
+       {name:"M. Mustermann", meta:"Energieberatung · Musterstadt", badge:null, lines:["Modul: Wohngebäude"], note:"Nur Pflichtangaben"},
+       {name:"M. Mustermann", meta:"Energieberatung · Landkreis Rosenheim", badge:"Netzwerkpartner GIH", lines:["Energieberatung für Ein- und Zweifamilienhäuser im Landkreis Rosenheim. Schwerpunkt iSFP und Baubegleitung bei Einzelmaßnahmen – vom ersten Gespräch bis zum Förderantrag.","Leistungen: iSFP · Einzelmaßnahmen (BEG EM) · Baubegleitung · Energieausweise"], note:"Kurzbeschreibung, Logo, Leistungsübersicht"}
+     ], answer:1,
+     explain:"Beide Profile sind formal korrekt. Aber nur das zweite transportiert Spezialisierung, Region und Arbeitsweise – allein dadurch hebt man sich von der Konkurrenz ab. Der erste Eindruck zählt."},
+    {type:"tf", q:"Schnellcheck Listung", items:[
+      {s:"Anträge auf Listung werden nach Eingangsdatum bearbeitet – also früh starten.", a:true, e:"Genau deshalb sollte der Prozess zeitnah nach dem Kurs angestoßen werden."},
+      {s:"Die Listung selbst ist kostenlos, nur Nebenadressen kosten Geld.", a:false, e:"Prüfung 100 € je Modul, Jahresbeitrag 120 € bzw. 170 €, Nebenadressen 10 € – alles zzgl. 19 % MwSt."},
+      {s:"Pro Expert:in sind maximal vier Nebenadressen möglich.", a:true, e:"Maximal vier, je 10 € im Jahr."},
+      {s:"Die Eintragung über Referenzen ist günstiger als über Weiterbildung.", a:false, e:"Über Referenzen fallen zusätzlich 200 € Prüfgebühr an."}
+    ]}
+  ],
+  merk:["Frühzeitig registrieren, um den Prozess der Listung zu beschleunigen.","Ein aussagekräftiges Profil erstellen und sich damit von der Konkurrenz abheben.","Die Listung kostet Geld – Prüfung, Jahresbeitrag, Nebenadressen, alles zzgl. MwSt."]
+},
+{
+  key:"ausweis", name:"Energieausweise", short:"Ausweise",
+  intro:"Der erste Kunde will einen Energieausweis. Auch dafür brauchst du eine eigene Registrierung – und du solltest wissen, wer deine Ausweise kontrolliert.",
+  tasks:[
+    {type:"mc", q:"Wo registrierst du dich, um Energieausweise ausstellen zu dürfen?",
+     options:["Beim Deutschen Institut für Bautechnik (DIBt) über ein GEG-Benutzerkonto","Bei der Energie-Effizienz-Experten-Liste","Beim BAFA","Bei der örtlichen Bauaufsichtsbehörde"], answer:0,
+     explain:"Beim DIBt bestellst du die Registriernummern und ordnest sie dem jeweiligen Ausweis zu. Hinweis aus der Unterlage: Der Energieausweis nach GModG ist noch nicht verfügbar – das betrifft Registrierung und Kontrollverfahren."},
+    {type:"mc", q:"Was kostet eine Registriernummer für einen Energieausweis?",
+     options:["6,90 €","69 €","19 €","100 €"], answer:0, shuffle:false,
+     explain:"6,90 € pro Registriernummer beim DIBt."},
+    {type:"sort", q:"Drei Stufen der Ausweiskontrolle: Wohin gehört die Aussage?", buckets:["Stufe 1 – DIBt (Statistik)","Stufe 2 + 3 – Bauaufsichtsbehörde"],
+     items:[
+       {t:"Rein statistische Erfassung der Ausweisdaten", b:0},
+       {t:"Rechtsgrundlage ist § 99 Abs. 6 GModG", b:1},
+       {t:"Führt zu keinerlei Rückfragen oder Anmerkungen", b:0},
+       {t:"Rückfragen sind schriftlich zu beantworten", b:1},
+       {t:"Bei Stichproben meist XML-Upload aus der Beratersoftware", b:0},
+       {t:"Bußgeld bis zu 5.000 € möglich", b:1},
+       {t:"Nur die Ausweisnummern gehen an die zuständige Behörde", b:0},
+       {t:"Kein Neuausstellen des Ausweises ohne Aufforderung des Amtes", b:1}
+     ],
+     explain:"Stufe 1 ist reine Statistik ohne Weitergabe an die Bauaufsicht. Stufe 2 und 3 sind echte Stichprobenkontrollen der Behörde (§ 99 GModG), Bußgeld nach § 108 GModG bis 5.000 €."},
+    {type:"tf", q:"Schnellcheck Kontrolle", items:[
+      {s:"Stufe 1 ist Voraussetzung für die Stufen 2 und 3.", a:false, e:"Es sind unabhängige Stichprobenkontrollen."},
+      {s:"Erst die Übergabe an den Eigentümer macht den Energieausweis rechtskräftig.", a:true, e:"Deshalb: nicht ohne Aufforderung des Amtes neu ausstellen."},
+      {s:"Die Datenabfrage zur Erstellung erfolgt nach § 100 GModG ohne personenbezogene Daten.", a:true, e:"§ 100 GModG."},
+      {s:"Bei einer Behörden-Rückfrage reicht ein kurzer Anruf.", a:false, e:"Rückfragen sind schriftlich zu beantworten."}
+    ]},
+    {type:"multi", q:"Wann schreibt das GModG einen Energieausweis vor? Wähle alle zutreffenden Fälle.",
+     options:["Neubau","Größere Sanierung","Vermietung oder Verkauf eines Bestandsgebäudes","Aushang in bestimmten Gebäuden mit starkem Publikumsverkehr","Bei jedem Mieterwechsel neu","Jährlich für alle Wohngebäude"], answers:[0,1,2,3],
+     explain:"Im Bestand sind sowohl Bedarfs- als auch Verbrauchsausweise zulässig. Details: BBSR bzw. GModG-Infoportal. Erste Frage bei jedem Objekt: Ist überhaupt ein Ausweis nötig?"}
+  ],
+  merk:["Genau prüfen, ob bei einem Objekt überhaupt ein Energieausweis nötig ist.","Profil beim DIBt anlegen und dort Energieausweisnummern bestellen (6,90 € je Nummer).","Stufe 1 ist Statistik, Stufe 2 und 3 sind Behördenprüfung – unabhängig voneinander."]
+},
+{
+  key:"versicherung", name:"Versicherungen", short:"Versicherung",
+  intro:"Bevor du das erste Haus betrittst: Welche Police zahlt, wenn etwas schiefgeht? Und was ist der Unterschied zwischen einem Blumenkasten und einem Beratungsfehler?",
+  tasks:[
+    {type:"mc", story:"Der Blumenkasten-Fall, Teil 1: Bei einer Begehung öffnest du ein Fenster, um die Wanddicke zu ermitteln. Dabei stößt du versehentlich einen Blumenkasten hinunter. Er landet auf dem leeren Gehweg.",
+     q:"Ist das laut Unterlage schon ein Schadensfall?",
+     options:["Nein – der herabfallende Blumentopf allein ist noch kein Schadensfall","Ja – jedes Herunterfallen ist automatisch ein Versicherungsfall","Ja, aber nur für die Vermögensschadenhaftpflicht"], answer:0,
+     explain:"Laut Unterlage: Der herabfallende Blumentopf allein ist noch kein Schadensfall. Erst das Treffen einer Person macht ihn dazu."},
+    {type:"mc", story:"Teil 2: Diesmal trifft der Blumenkasten eine Person, die unter dem Fenster steht.",
+     q:"Welche Versicherung reguliert – und warum?",
+     options:["Betriebshaftpflicht – Personenschaden durch fahrlässiges Verhalten, Haftung nach § 823 BGB","Vermögensschadenhaftpflicht – es handelt sich um einen beruflichen Verstoß","Rechtsschutz – die Person wird vermutlich klagen","Keine – Fahrlässigkeit ist grundsätzlich nicht versichert"], answer:0,
+     explain:"§ 823 BGB: Wer vorsätzlich oder fahrlässig Leben, Körper, Gesundheit, Freiheit, Eigentum oder ein sonstiges Recht eines anderen widerrechtlich verletzt, ist zum Ersatz verpflichtet. Fahrlässigkeit = Außerachtlassung der gehörigen Sorgfalt – anders als beim Vorsatz will man den Schaden gerade nicht."},
+    {type:"match", q:"Welche Versicherung wofür? Tippe links eine Police und rechts den passenden Zweck an.",
+     pairs:[["Berufshaftpflicht","Schutz vor Schadensersatzansprüchen"],["Betriebshaftpflicht","Schutz vor Schäden an Dritten"],["Inhaltsversicherung","Büro und Ausstattung"],["Rechtsschutz","Unterstützung bei rechtlichen Auseinandersetzungen"],["Krankenversicherung","Absicherung bei Krankheit oder Unfall"],["Betriebliche Altersvorsorge","Langfristige Rente"],["Fahrzeugversicherung","Genutzte Fahrzeuge"],["Berufsunfähigkeit (optional)","Einkommensausfälle"]],
+     explain:"Bei der Auswahl darauf achten, dass Energieberatung, Baubegleitung und ggf. Fördermittel versichert sind. Grundprinzip: Ich tausche ein bekanntes kleines Risiko (die Prämie) gegen ein unbekanntes Risiko."},
+    {type:"sort", q:"Verstoß-Theorie: Welche Police ist zuständig?", buckets:["Betriebshaftpflicht","Vermögensschaden­haftpflicht"],
+     items:[
+       {t:"Beim Aufmaß kippt deine Leiter auf das Auto des Kunden", b:0},
+       {t:"Deine Empfehlung verfehlt die Förderbedingungen – der Kunde verliert den Zuschuss", b:1},
+       {t:"Ein Fehler in deinem Förderantrag fällt erst zwei Jahre später auf", b:1},
+       {t:"Beim Dachbodencheck trittst du durch die Decke", b:0},
+       {t:"Die Versicherung wehrt unberechtigte Forderungen ab (passiver Rechtsschutz)", b:1},
+       {t:"Schadensereignis und Schadenseintritt fallen sofort zusammen", b:0},
+       {t:"Auslöser der Deckung ist der Verstoß, nicht der Schadenseintritt", b:1},
+       {t:"Deckt Personen- und Sachschäden", b:0}
+     ],
+     explain:"Betriebshaftpflicht: handwerklich-körperliche Tätigkeit, Schaden tritt sofort ein. Vermögensschadenhaftpflicht: Fehler aus der Beratung, Schaden wird oft erst später sichtbar – versichert ist der Verstoß während der Vertragsdauer. Sie deckt keine Sach- oder Personenschäden."},
+    {type:"mc", story:"Du schließt dein erstes Projekt im März ab und unterschreibst im Mai die Vermögensschadenhaftpflicht. Im Oktober meldet der Kunde einen Beratungsfehler aus dem März.",
+     q:"Was gilt?",
+     options:["Nicht versichert – der Verstoß liegt vor Vertragsbeginn","Versichert – der Schaden wurde während der Vertragslaufzeit gemeldet","Versichert – die Nachhaftung gilt rückwirkend","Die Betriebshaftpflicht springt ersatzweise ein"], answer:0,
+     explain:"Verstöße vor Beginn des Vertrages sind nicht versichert. Wer erst nach dem ersten Projekt eine Police abschließt, ist für dieses Projekt ungedeckt. Nachhaftung wirkt nach dem Vertragsende, nicht davor – und kann sogar für Erben relevant werden."},
+    {type:"multi", q:"Vor dem Versicherungsgespräch: Welche vier Fragen solltest du beantworten können?",
+     options:["Welche Leistungen biete ich an?","Was ist mein Hauptgeschäftsfeld?","Welche Risiken will ich abdecken, und wie hoch ist das Schadenspotenzial?","Welche Umsätze erwarte ich für das Geschäftsjahr?","Welche Beratersoftware nutze ich?","Wie viele Kund:innen hat mein Versicherungsmakler?"], answers:[0,1,2,3],
+     explain:"Beim Hauptgeschäftsfeld ist „Architekt mit Energieberatung“ etwas anderes als „Energieberatung mit Architektenleistungen“. Wer HOAI-pflichtige Nachweise erbringt, sollte ggf. die HOAI-Felder 1–9 mitversichern – das geht auch für Nicht-Architekt:innen."},
+    {type:"tf", q:"Schnellcheck Versicherung", items:[
+      {s:"Die Kosten der Berufshaftpflicht sind als Betriebsausgabe steuerlich absetzbar.", a:true, e:"Praxistipp aus dem Kurs."},
+      {s:"Die Haftung für Schäden kann auf Erben übergehen.", a:true, e:"Deshalb: ausreichende Nachhaftung. Schadenfälle aus der Versicherungszeit können die Erben im Nachhaftungszeitraum klären."},
+      {s:"Das Regelheft der EEE-Liste (Ziffer 1.1.2) verlangt eine Haftpflicht, die Beantragung, Planung und Durchführung der Förderprogramme abdeckt.", a:true, e:"Details sind in eigener Verantwortung zu klären."},
+      {s:"Wer nur berät und nicht baut, braucht keine Betriebshaftpflicht.", a:false, e:"Der Blumenkasten lässt grüßen: Personen- und Sachschäden passieren auch bei der Begehung."}
+    ]}
+  ],
+  merk:["Genau definieren, welche Leistungen ich anbiete – und dann den passenden Versicherungsschutz suchen.","Beratungsfehler = Vermögensschadenhaftpflicht. Personen- und Sachschäden = Betriebshaftpflicht.","Police vor dem ersten Projekt abschließen und auf ausreichende Nachhaftung achten."]
+},
+{
+  key:"akquise", name:"Akquise", short:"Akquise",
+  intro:"Gelistet, registriert, versichert – aber das Telefon bleibt still. Wie kommst du an die ersten Kund:innen?",
+  tasks:[
+    {type:"sort", q:"Aktiv oder passiv? Ordne die Akquise-Maßnahme zu.", buckets:["Aktive Akquise","Passive Akquise"],
+     items:[
+       {t:"Partnerschaften mit anderen Energieberater:innen knüpfen", b:0},
+       {t:"In der EEE-Liste listen lassen", b:1},
+       {t:"Mitglied im GIH oder DEN werden", b:0},
+       {t:"Eine ansprechende Webseite gestalten", b:1},
+       {t:"Messen und ähnliche Veranstaltungen besuchen", b:0},
+       {t:"Google-Maps-Eintrag für das Geschäft anlegen", b:1},
+       {t:"Zimmerer und Schornsteinfeger als Multiplikatoren ansprechen", b:0},
+       {t:"In Portalen listen lassen", b:1},
+       {t:"Social-Media-Beiträge schreiben", b:0},
+       {t:"Architekturbüros ein Kooperationsangebot machen", b:0}
+     ],
+     explain:"Aktiv heißt: Du gehst auf Menschen zu. Passiv heißt: Du sorgst dafür, gefunden zu werden. Genannte Kanäle: LinkedIn, GIH, Heim+Handwerk, Xing, EEE-Liste, Google Maps."},
+    {type:"mc", q:"Wer sind typische Multiplikatoren, die dir Kund:innen zuspielen können?",
+     options:["Zimmerer und Schornsteinfeger","Steuerberater und Notare","Versicherungsmakler","Die Bauaufsichtsbehörde"], answer:0,
+     explain:"Handwerk, das ohnehin im Haus ist, sieht den Sanierungsbedarf zuerst."},
+    {type:"mc", q:"Über welchen Verband kommst du laut Unterlage an Kontakte zu Architekturbüros und Bauingenieur:innen?",
+     options:["BDB","DIBt","BAFA","BBSR"], answer:0, shuffle:false,
+     explain:"Kontakte gibt es über Kammern und Verbände, z. B. den BDB. Die anderen drei sind Behörden bzw. Institute – nicht deine Akquise-Adressen."},
+    {type:"mc", q:"Was ist die Kernbotschaft der Unterlage zur Akquise?",
+     options:["Aktive und passive Kanäle stehen zur Verfügung – beide nutzen","Erst mal nur passiv – aktive Akquise wirkt aufdringlich","Nur aktiv – passive Kanäle bringen am Anfang nichts","Mit Akquise erst nach dem dritten Projekt starten"], answer:0,
+     explain:"Beide Kanäle. Und das Profil in der EEE-Liste ist selbst ein Akquise-Instrument."}
+  ],
+  merk:["Aktive und passive Kanäle stehen zur Verfügung – beide nutzen.","Multiplikatoren wie Zimmerer und Schornsteinfeger sind deine Verbündeten.","EEE-Liste, Webseite, Portale, Google Maps: dafür sorgen, gefunden zu werden."]
+},
+{
+  key:"projekt", name:"Erstes Projekt", short:"Projekt",
+  intro:"Das Telefon klingelt. Ein Mehrfamilienhaus, vier Wohnungen, hohe Energiekosten. Jetzt zählt, ob du vorbereitet bist – im Gespräch und im Angebot.",
+  tasks:[
+    {type:"order", q:"Bring die vier Schritte des ersten Projekts in die richtige Reihenfolge. Tippe die Schritte nacheinander an.",
+     items:["Erster Austausch und Abstimmung zum Projektziel","Erstellung eines Angebots","Identifikation von Fördermitteln","Beantragung von Fördermitteln (für die Beratung)"],
+     explain:"Erst reden, dann anbieten, dann Förderung finden und beantragen – und zwar bevor das Vertragsverhältnis eingegangen wird."},
+    {type:"dialog", q:"Das erste Kundengespräch. Wähle jeweils deine Antwort. Am Ende siehst du, welche der sechs Erstinformationen du eingesammelt hast.",
+     infos:["Umfang des Projekts","Zeitrahmen (Start und Ende)","Verhältnis des Kunden zum Gebäude","Frühere Energieberatung?","Kosten der Beratung","Bedingungen für die Zusammenarbeit"],
+     turns:[
+       {them:"Guten Tag, Herr Weber hier. Ich habe ein Mehrfamilienhaus mit vier Wohnungen, und die Energiekosten sind explodiert. Können Sie mir helfen?",
+        options:[
+          {t:"Gerne. Darf ich fragen, in welchem Verhältnis Sie zum Gebäude stehen – Sie sind Eigentümer, wohnen aber selbst nicht darin?", good:true, tags:[2], fb:"Genau: Das Verhältnis zum Gebäude entscheidet über Förderweg und Ansprechpartner."},
+          {t:"Klar, ich komme morgen vorbei und schaue mir das an.", good:false, fb:"Zu schnell. Du weißt noch nicht, mit wem du es zu tun hast und worum es geht."},
+          {t:"Das wird teuer. Haben Sie schon andere Angebote eingeholt?", good:false, fb:"Schlechter Einstieg – erst verstehen, dann über Geld reden."}
+        ]},
+       {them:"Richtig, ich vermiete alle vier Wohnungen. Was würden Sie mir denn vorschlagen?",
+        options:[
+          {t:"Neue Fenster, das bringt bei so einem Haus am meisten.", good:false, fb:"Diagnose ohne Daten. Ohne Begehung ist jede Maßnahme geraten."},
+          {t:"Zuerst eine Ortsbegehung, dann ein individueller Sanierungsfahrplan. Der iSFP zeigt sowohl schrittweise Einzelmaßnahmen als auch die Komplettsanierung.", good:true, tags:[], fb:"So läuft der Vorschlag aus der Unterlage: Begehung, dann iSFP – mit Erklärung, was der leisten kann."},
+          {t:"Dafür bräuchte ich erst einmal alle Heizkostenabrechnungen der letzten zehn Jahre.", good:false, fb:"Verbrauchsdaten sind hilfreich, aber das ist keine Antwort auf die Frage nach dem Vorgehen."}
+        ]},
+       {them:"Klingt vernünftig. Wie geht es dann weiter?",
+        options:[
+          {t:"Unterschreiben Sie den Vertrag, dann beantrage ich anschließend die Förderung für Sie.", good:false, fb:"Falsche Reihenfolge! Die Förderung muss beantragt werden, bevor das Vertragsverhältnis eingegangen wird."},
+          {t:"Hatten Sie schon einmal eine Energieberatung? Und welchen Umfang stellen Sie sich vor – einzelne Schritte oder eine Komplettsanierung?", good:true, tags:[0,3], fb:"Zwei Erstinformationen auf einmal: frühere Beratung und Projektumfang."},
+          {t:"Ich schicke Ihnen eine Rechnung für den ersten Termin, dann legen wir los.", good:false, fb:"Ohne Angebot, ohne Förderhinweis – so nicht."}
+        ]},
+       {them:"Nein, beraten wurde ich noch nie. Und eher schrittweise, ich kann nicht alles auf einmal stemmen. Was kostet das Ganze bei Ihnen?",
+        options:[
+          {t:"Das kann ich jetzt noch nicht sagen, das sehen wir dann.", good:false, fb:"Der Kunde braucht eine klare Ansage zu Kosten und Bedingungen – sonst ruft er den nächsten Berater an."},
+          {t:"Lassen Sie uns das gleich am Telefon fix machen, die Förderung kläre ich später.", good:false, fb:"Wieder die falsche Reihenfolge: erst Förderantrag, dann Vertrag."},
+          {t:"Ich schicke Ihnen ein Angebot für den Vor-Ort-Termin plus eine Checkliste zum Ausfüllen. Wichtig: Die Förderung für die Beratung muss beantragt sein, bevor wir den Vertrag schließen.", good:true, tags:[4,5], fb:"Kosten, Bedingungen und der entscheidende Hinweis zur Reihenfolge – so steht es in der Unterlage."}
+        ]},
+       {them:"Förderung für die Beratung? Wie funktioniert das denn?",
+        options:[
+          {t:"Sie stellen den Antrag online beim BAFA und geben dabei meine Beraternummer an. Danach schicken Sie mir den unterschriebenen Vertrag zurück.", good:true, tags:[], fb:"Genau der Förderweg aus der Unterlage: Antrag online beim BAFA mit Beraternummer des Beraters."},
+          {t:"Das mache ich komplett für Sie, Sie müssen gar nichts tun.", good:false, fb:"Der Antrag läuft über den Kunden – er muss deine Beraternummer angeben."},
+          {t:"Das klären wir dann irgendwann beim Termin.", good:false, fb:"Zu spät – der Antrag muss vor dem Vertrag gestellt sein."}
+        ]},
+       {them:"Alles klar, das kriege ich hin. Wann könnten wir starten?",
+        options:[
+          {t:"Ich melde mich dann mal.", good:false, fb:"Kein Zeitrahmen, kein Termin, keine Adresse – das Gespräch verpufft."},
+          {t:"Morgen früh um sieben stehe ich vor der Tür.", good:false, fb:"Ohne Angebot, ohne Antrag, ohne Adresse."},
+          {t:"Wann soll es losgehen, und bis wann soll es abgeschlossen sein? Dann schlage ich Ihnen Termine vor – ich brauche noch die Adresse des Objekts.", good:true, tags:[1], fb:"Zeitrahmen geklärt, Terminvorschläge, Objektadresse – sauberer Abschluss."}
+        ]}
+     ],
+     explain:"Vorbereitet sein und einen Leitfaden nutzen – mit allen Informationen, die man für die Angebotserstellung braucht. Und: Wie gehst du mit Fragen um, die du nicht beantworten kannst? Ehrlich sagen, nachliefern."},
+    {type:"spot", q:"Angebots-Check: Drei Zeilen in diesem Angebot gehen so nicht. Tippe sie an.",
+     lines:[
+       {t:"Angebot Nr. 2026-014 · Energieberatung Wohngebäude", bad:false},
+       {t:"Auftragnehmer: Energieberatung Mustermann · Auftraggeber: — · Objekt: —", bad:true, why:"Vertragsparteien und Objekt müssen festgehalten werden."},
+       {t:"Leistung: Vor-Ort-Begehung mit Datenaufnahme nach Checkliste, Erstellung eines individuellen Sanierungsfahrplans (iSFP) inkl. Abschlussgespräch", bad:false},
+       {t:"Preis: 1.900 € netto zzgl. 19 % MwSt. = 2.261 € brutto", bad:false},
+       {t:"Förderung: ergibt sich erfahrungsgemäß von selbst, Details folgen später", bad:true, why:"Förderbedingungen und Subventionshöhe müssen genannt und erläutert werden."},
+       {t:"Zahlung: nach Gefühl, wenn es bei Ihnen gerade passt", bad:true, why:"Klare Zahlungsbedingungen und Fristen gehören ins Angebot."},
+       {t:"Abweichende oder zusätzliche Leistungen werden schriftlich vereinbart", bad:false},
+       {t:"Datenschutz: Ihre Gebäude- und Verbrauchsdaten werden vertraulich behandelt", bad:false}
+     ],
+     explain:"Checkliste fürs Angebot: Vertragsparteien und Objekt, verständliche Sprache, klare Leistungen, transparente Preise, Förderbedingungen und -höhe, Normen, Zahlungsbedingungen, Dokumentation, Abweichungen, Datenschutz. Hilfsmittel: Checkliste Vertragsgestaltung des Gebäudeforums / BAFA-FEBS."},
+    {type:"mc", q:"Welches Hilfsmittel nennt die Unterlage für die Vertragsgestaltung?",
+     options:["Checkliste Vertragsgestaltung des Gebäudeforums / BAFA-FEBS","Musterverträge der Handwerkskammer","HOAI-Vertragsgenerator","Checkliste Energieberatungstag"], answer:0,
+     explain:"Es gibt sie für die Sanierung zum KfW-Effizienzhaus und für Einzelmaßnahmen bzw. Maßnahmenpakete in Wohngebäuden. Die Checkliste Energieberatungstag gehört zur Vor-Ort-Begehung."}
+  ],
+  merk:["Kundengespräch: vorbereitet sein und einen Leitfaden nutzen – mit allen Infos für die Angebotserstellung.","Angebotserstellung: sicherstellen, dass die Leistung klar beschrieben ist.","Die Förderung wird beantragt, bevor das Vertragsverhältnis eingegangen wird."]
+},
+{
+  key:"vorort", name:"Vor-Ort-Begehung", short:"Vor Ort",
+  intro:"Angebot angenommen, Förderung beantragt. Jetzt stehst du zum ersten Mal vor dem Haus – mit Checkliste, Zollstock und vielleicht einer Wärmebildkamera.",
+  tasks:[
+    {type:"multi", q:"Welche Ziele hat die Vor-Ort-Begehung? Wähle alle zutreffenden.",
+     options:["Persönliches Kennenlernen der Bauherr:innen","Bestimmung des Sanierungsziels","Datenerfassung und Hausbegehung","Besprechung von Fördermitteln und nächsten Schritten","Abklärung von Sonderwünschen","Sofort ein verbindliches Maßnahmenpaket verkaufen","Den Preis aus dem Angebot nachverhandeln"], answers:[0,1,2,3,4],
+     explain:"Die Begehung baut das persönliche Verhältnis auf und ist der beste Zeitpunkt, Daten zu sammeln und die Gegebenheiten zu prüfen."},
+    {type:"match", q:"Arbeitshilfen: Wer stellt welche bereit?",
+     pairs:[["Checkliste Energieberatungstag","Landratsamt Rosenheim / GIH Bayern / ezro"],["Checkliste Vorabgespräch mit dem Eigentümer","BAFA / FEBS"],["Checkliste Datenaufnahme","Gebäudeforum Klimaneutral / Mein Sanierungsfahrplan"],["Virtuelle Gebäudebegehung","Universität Kassel"]],
+     explain:"Alle drei Checklisten sind frei verfügbar. Die virtuelle Begehung der Uni Kassel enthält Kundengespräch, 3D-Bilder, Vor-Ort-Interview und die gelöste Checkliste Datenaufnahme – ideal fürs Selbststudium."},
+    {type:"mc", q:"Thermografie hilft, Wärmelecks zu finden und Schäden früh zu erkennen. Was ist der Haken?",
+     options:["Ohne passende Randbedingungen und Schulung werden die Bilder schnell fehlinterpretiert","Sie ist nur im Sommer zulässig","Sie ersetzt die Datenaufnahme vollständig","Sie darf nur die Bauaufsichtsbehörde durchführen"], answer:0,
+     explain:"Wärmebilder sind ein Hilfsmittel, kein Beweis. Randbedingungen (Temperaturdifferenz, Wetter, Tageszeit) und Schulung entscheiden über die Aussagekraft."},
+    {type:"tf", q:"Schnellcheck Begehung", items:[
+      {s:"Die Vor-Ort-Begehung ist der beste Zeitpunkt, um Daten zu sammeln und die Gegebenheiten zu prüfen.", a:true, e:"Merksatz aus dem Kapitel."},
+      {s:"Was Kund:innen wünschen und was tatsächlich möglich ist, deckt sich in der Praxis immer.", a:false, e:"Genau das klärt die Begehung – Wunsch und Machbarkeit decken sich nicht immer."},
+      {s:"Die Checkliste Datenaufnahme richtet sich an Eigentümer:innen zum Selbstausfüllen.", a:false, e:"Sie ist die Arbeitshilfe für Energieberater:innen. Für Eigentümer:innen gibt es die Checkliste Vorabgespräch (BAFA/FEBS)."}
+    ]}
+  ],
+  merk:["Die Vor-Ort-Begehung baut das persönliche Verhältnis zur Bauherrin oder zum Bauherren auf.","Sie ist der beste Zeitpunkt, um Daten zu sammeln und die Gegebenheiten vor Ort zu prüfen.","Sie zeigt, was Kund:innen wünschen und was tatsächlich möglich ist – das deckt sich nicht immer."]
+}
+];
+
+const TYPE_LABEL = {mc:"Auswahl", tf:"Richtig oder falsch", number:"Kostenrechner", sort:"Zuordnen", match:"Paare finden", order:"Reihenfolge", multi:"Mehrfachauswahl", dialog:"Kundengespräch", spot:"Fehlersuche", compare:"Profil-Vergleich"};
+const MAX = STATIONS.reduce((a,s)=>a+s.tasks.length*10,0);
+const RANKS = [
+  [90,"Listungsreif","Du könntest morgen das erste Angebot rausschicken. Fast alles saß."],
+  [75,"Fast startklar","Solide. Schau dir die Stationen mit den kürzeren Balken noch einmal an."],
+  [50,"Auf dem Fahrplan","Die Richtung stimmt, aber ein paar Details fehlen noch – vor allem bei Zahlen und Zuständigkeiten."],
+  [0,"Nachschulung empfohlen","Noch einmal durchspielen lohnt sich – die Erklärungen unter jeder Aufgabe sind der Stoff."]
+];
+
+/* ---------------- Zustand ---------------- */
+let S = {view:"home", st:0, ti:0, score:0, stScores:[], name:""};
+let best = null;
+function load(){ try{ const s=localStorage.getItem("vzp-state"); if(s) S=Object.assign(S,JSON.parse(s)); const b=localStorage.getItem("vzp-best"); if(b) best=JSON.parse(b); }catch(e){} }
+function save(){ try{ localStorage.setItem("vzp-state", JSON.stringify(S)); }catch(e){} }
+function saveBest(){ if(!best || S.score>best.score){ best={score:S.score, date:new Date().toISOString().slice(0,10)}; try{ localStorage.setItem("vzp-best", JSON.stringify(best)); }catch(e){} } }
+function reset(){ S={view:"intro", st:0, ti:0, score:0, stScores:[], name:S.name||""}; save(); render(); }
+
+/* ---------------- Helfer ---------------- */
+function el(tag, attrs={}, ...kids){
+  const e=document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs)){
+    if(k==="class") e.className=v;
+    else if(k==="html") e.innerHTML=v;
+    else if(k.startsWith("on")) e.addEventListener(k.slice(2),v);
+    else if(v!==false&&v!=null) e.setAttribute(k,v);
+  }
+  for(const k of kids.flat()){ if(k==null||k===false) continue; e.append(k.nodeType?k:document.createTextNode(k)); }
+  return e;
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+const segVar=i=>`var(--s${i+1})`;
+function shakeEl(e){ e.classList.remove("shake"); void e.offsetWidth; e.classList.add("shake"); }
+
+/* ---------------- Rendering ---------------- */
+function render(){
+  const stage=document.getElementById("stage"); stage.innerHTML="";
+  renderRibbon();
+  document.getElementById("score").textContent=S.score+" Pkt";
+  ({home:renderHome, intro:renderIntro, task:renderTask, stdone:renderStDone, end:renderEnd})[S.view](stage);
+  window.scrollTo({top:0});
+}
+function renderRibbon(){
+  const r=document.getElementById("ribbon"); r.innerHTML="";
+  STATIONS.forEach((s,i)=>{
+    const done = S.view==="end" || i<S.st || (i===S.st && S.view==="stdone");
+    const cur = !done && i===S.st && S.view!=="home";
+    r.append(el("div",{class:"seg"+(done?" done":"")+(cur?" cur":""),"data-i":i,title:s.name}));
+  });
+}
+function stationPossible(i){ return STATIONS[i].tasks.length*10; }
+
+function renderHome(stage){
+  const inProgress = S.st>0 || S.ti>0 || S.score>0;
+  const card=el("div",{class:"card"},
+    el("div",{class:"eyebrow"}, "Paket 5 · Block 8 Teil 1"),
+    el("h1",{class:"title"},"Vom Zertifikat zum ersten Projekt"),
+    el("p",{class:"lead"},"Du hast den Kurs geschafft. Jetzt geht es um alles, was zwischen Zertifikat und erstem Auftrag liegt: Listung, Energieausweise, Versicherungen, Akquise, das erste Kundengespräch und die Begehung. Sechs Stationen, "+STATIONS.reduce((a,s)=>a+s.tasks.length,0)+" Aufgaben, "+MAX+" Punkte."),
+    el("div",{class:"stations"}, STATIONS.map((s,i)=>{
+      const done=i<S.st, cur=i===S.st;
+      return el("div",{class:"station"+(cur&&inProgress?" cur":"")+(!done&&!cur?" locked":""),style:"--seg:"+segVar(i)},
+        el("div",{class:"num"},String(i+1)),
+        el("div",{}, el("div",{class:"nm"},s.name), el("div",{class:"sub"}, s.tasks.length+" Aufgaben · "+stationPossible(i)+" Punkte")),
+        el("div",{class:"st"}, done ? (S.stScores[i]||0)+"/"+stationPossible(i) : cur&&inProgress ? "läuft" : "")
+      );
+    })),
+    el("div",{class:"row"},
+      el("button",{class:"btn",type:"button",onclick:()=>{ S.view = S.ti>=STATIONS[S.st].tasks.length ? "stdone" : S.ti>0 ? "task" : "intro"; save(); render(); }}, inProgress ? "Weiter bei Station "+(S.st+1) : "Los geht's"),
+      inProgress ? el("button",{class:"btn ghost",type:"button",onclick:()=>{ if(confirm("Fortschritt löschen und von vorn beginnen?")) reset(); }},"Von vorn") : null
+    ),
+    best ? el("p",{class:"hint"},"Bestes Ergebnis in diesem Browser: "+best.score+" von "+MAX+" Punkten ("+best.date+")") : null
+  );
+  stage.append(card);
+}
+
+function renderIntro(stage){
+  const s=STATIONS[S.st];
+  stage.append(el("div",{class:"card"},
+    el("div",{class:"eyebrow",style:"--seg:"+segVar(S.st)}, el("span",{class:"dot"}), "Station "+(S.st+1)+" von "+STATIONS.length),
+    el("h1",{class:"title"}, s.name),
+    el("p",{class:"lead"}, s.intro),
+    el("p",{class:"hint"}, s.tasks.length+" Aufgaben · bis zu "+stationPossible(S.st)+" Punkte"),
+    el("div",{class:"row"}, el("button",{class:"btn",type:"button",onclick:()=>{ S.view="task"; S.ti=0; save(); render(); }},"Station starten"))
+  ));
+}
+
+function renderTask(stage){
+  const s=STATIONS[S.st], t=s.tasks[S.ti];
+  const card=el("div",{class:"card"},
+    el("div",{class:"eyebrow",style:"--seg:"+segVar(S.st)}, el("span",{class:"dot"}), "Station "+(S.st+1)+" · "+s.name, el("span",{class:"chip"},"Aufgabe "+(S.ti+1)+"/"+s.tasks.length), el("span",{class:"chip"},TYPE_LABEL[t.type]))
+  );
+  if(t.story) card.append(el("p",{class:"story"},t.story));
+  card.append(el("h2",{class:"q"},t.q));
+  const box=el("div",{style:"display:flex;flex-direction:column;gap:14px"});
+  card.append(box);
+  const fbHost=el("div"); card.append(fbHost);
+  const ctx={t, box, fbHost, done:false};
+  ({mc:rMC, tf:rTF, number:rNumber, sort:rSort, match:rMatch, order:rOrder, multi:rMulti, dialog:rDialog, spot:rSpot, compare:rCompare})[t.type](ctx);
+  stage.append(card);
+}
+
+function finish(ctx, points, detail){
+  if(ctx.done) return; ctx.done=true;
+  points=clamp(Math.round(points),0,10);
+  S.score+=points; S.stScores[S.st]=(S.stScores[S.st]||0)+points;
+  const last = S.ti>=STATIONS[S.st].tasks.length-1;
+  S.ti+=1; if(last){ S.view="stdone"; }
+  save();
+  document.getElementById("score").textContent=S.score+" Pkt";
+  const cls = points===10?"ok":points===0?"bad":"";
+  const head = points===10?"Richtig":points===0?"Leider nicht":"Teilweise richtig";
+  const fb=el("div",{class:"feedback "+cls},
+    el("div",{class:"head"}, el("span",{},head), el("span",{class:"pts"},"+"+points+" Pkt")),
+    detail||null,
+    ctx.t.explain ? el("p",{class:"sub"},ctx.t.explain) : null,
+    el("div",{class:"row end"}, el("button",{class:"btn",type:"button",onclick:()=>render()}, last ? "Station abschließen" : "Weiter"))
+  );
+  ctx.fbHost.append(fb);
+  fb.querySelector(".btn").focus({preventScroll:true});
+  fb.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+/* ---- Aufgabentypen ---- */
+function rMC(ctx){
+  const t=ctx.t; const opts=t.options.map((o,i)=>({o,i})); if(t.shuffle!==false) shuffle(opts);
+  const list=el("div",{class:"opts"});
+  opts.forEach(({o,i},k)=>{
+    const b=el("button",{class:"opt",type:"button"}, el("span",{class:"k"},String.fromCharCode(65+k)), el("span",{},o));
+    b.addEventListener("click",()=>{
+      if(ctx.done) return;
+      const ok=i===t.answer;
+      [...list.children].forEach((x,j)=>{ x.disabled=true; if(opts[j].i===t.answer) x.classList.add("is-ok"); });
+      if(!ok) b.classList.add("is-bad");
+      finish(ctx, ok?10:0);
+    });
+    list.append(b);
+  });
+  ctx.box.append(list);
+}
+
+function rTF(ctx){
+  const t=ctx.t; let i=0, correct=0;
+  const counter=el("div",{class:"counter"}); const stmt=el("div",{class:"itemcard"}); const btns=el("div",{class:"tfbtns"});
+  const res=el("div"); const log=el("div",{class:"log"});
+  ctx.box.append(counter, stmt, btns, res, log);
+  function show(){
+    const it=t.items[i]; counter.textContent="Aussage "+(i+1)+" von "+t.items.length; stmt.textContent=it.s; stmt.className="itemcard"; res.innerHTML=""; btns.innerHTML="";
+    [["Richtig",true],["Falsch",false]].forEach(([lab,val])=>{
+      btns.append(el("button",{class:"bucket",type:"button",onclick:()=>{
+        const ok=val===it.a; if(ok) correct++;
+        stmt.classList.add(ok?"flash-ok":"flash-bad");
+        [...btns.children].forEach(b=>b.disabled=true);
+        res.append(el("div",{class:"note "+(ok?"ok":"bad")}, el("b",{}, ok?"Richtig. ":"Nein – die Aussage ist "+(it.a?"richtig. ":"falsch. ")), it.e));
+        log.prepend(el("div",{class:ok?"ok":"bad"}, el("span",{class:"m"},ok?"✓":"✗"), it.s));
+        i++;
+        if(i<t.items.length) res.append(el("div",{class:"row end"}, el("button",{class:"btn ghost",type:"button",onclick:show},"Nächste Aussage")));
+        else finish(ctx, 10*correct/t.items.length, el("p",{class:"sub"}, correct+" von "+t.items.length+" Aussagen richtig eingeschätzt."));
+      }}, lab));
+    });
+  }
+  show();
+}
+
+function rNumber(ctx){
+  const t=ctx.t; let tries=0;
+  const inp=el("input",{type:"number",inputmode:"decimal",id:"num-"+S.st+"-"+S.ti,placeholder:"Betrag in "+t.unit,"aria-label":"Dein Ergebnis"});
+  const btn=el("button",{class:"btn",type:"button"},"Prüfen");
+  const wrap=el("div",{class:"numwrap"}, inp, btn); const note=el("div");
+  ctx.box.append(el("p",{class:"hint"},"Zur Erinnerung: Prüfung 100 € je Modul · Referenzen +200 € · Jahresbeitrag 120 € (ein Modul) / 170 € (zwei Module) · Nebenadresse 10 €/Jahr, max. vier."), wrap, note);
+  const check=()=>{
+    if(ctx.done) return; const v=parseFloat(String(inp.value).replace(",", ".")); if(isNaN(v)) { shakeEl(inp); return; }
+    tries++; const ok=Math.abs(v-t.answer)<0.5;
+    const calc=el("div",{class:"calc"}, t.calc.map(([l,r],k)=>[el("span",{class:k>=t.calc.length-2?"sum":""},l), el("b",{class:k>=t.calc.length-2?"sum":""},r)]));
+    if(ok){ inp.disabled=true; btn.disabled=true; finish(ctx, tries===1?10:5, calc); }
+    else if(tries===1){ note.innerHTML=""; note.append(el("div",{class:"note bad"}, el("b",{},"Nicht ganz. "), t.hint+" Noch ein Versuch.")); shakeEl(inp); inp.select(); }
+    else { inp.disabled=true; btn.disabled=true; note.innerHTML=""; finish(ctx, 0, el("div",{}, el("p",{class:"sub"},"Richtig wären "+t.answer+" "+t.unit+" gewesen:"), calc)); }
+  };
+  btn.addEventListener("click",check); inp.addEventListener("keydown",e=>{ if(e.key==="Enter") check(); });
+}
+
+function rSort(ctx){
+  const t=ctx.t; const items=shuffle(t.items.slice()); let i=0, correct=0; const misses=[];
+  const counter=el("div",{class:"counter"}); const card=el("div",{class:"itemcard"}); const buckets=el("div",{class:"buckets"}); const log=el("div",{class:"log"});
+  t.buckets.forEach((b,bi)=>buckets.append(el("button",{class:"bucket",type:"button",html:b,onclick:()=>pick(bi)})));
+  ctx.box.append(counter, card, buckets, log);
+  function show(){ counter.textContent="Karte "+(i+1)+" von "+items.length; card.textContent=items[i].t; card.className="itemcard"; }
+  function pick(bi){
+    if(ctx.done||i>=items.length) return; const it=items[i]; const ok=bi===it.b; if(ok) correct++; else misses.push(it);
+    card.classList.add(ok?"flash-ok":"flash-bad");
+    log.prepend(el("div",{class:ok?"ok":"bad"}, el("span",{class:"m"},ok?"✓":"✗"), it.t+(ok?"":" → "+t.buckets[it.b].replace("­",""))));
+    [...buckets.children].forEach(b=>b.disabled=true);
+    setTimeout(()=>{ i++; [...buckets.children].forEach(b=>b.disabled=false); if(i<items.length) show(); else { [...buckets.children].forEach(b=>b.disabled=true); finish(ctx, 10*correct/items.length, el("p",{class:"sub"}, correct+" von "+items.length+" richtig zugeordnet.")); } }, 420);
+  }
+  show();
+}
+
+function rMatch(ctx){
+  const t=ctx.t; const n=t.pairs.length; let mistakes=0, done=0, selL=null;
+  const left=t.pairs.map((p,i)=>({t:p[0],i})); const right=shuffle(t.pairs.map((p,i)=>({t:p[1],i})));
+  const colL=el("div",{class:"col"}), colR=el("div",{class:"col"});
+  const status=el("div",{class:"counter"},"0 von "+n+" Paaren · 0 Fehlversuche");
+  left.forEach(o=>{ const b=el("button",{class:"tile",type:"button"},o.t); b.dataset.i=o.i; b.addEventListener("click",()=>{ if(b.classList.contains("is-done")) return; colL.querySelectorAll(".tile").forEach(x=>x.classList.remove("is-sel")); b.classList.add("is-sel"); selL=b; }); colL.append(b); });
+  right.forEach(o=>{ const b=el("button",{class:"tile",type:"button"},o.t); b.dataset.i=o.i; b.addEventListener("click",()=>{
+    if(b.classList.contains("is-done")||ctx.done) return;
+    if(!selL){ shakeEl(b); return; }
+    if(selL.dataset.i===b.dataset.i){ selL.classList.remove("is-sel"); selL.classList.add("is-done"); b.classList.add("is-done"); selL.disabled=true; b.disabled=true; selL=null; done++; }
+    else { mistakes++; shakeEl(b); shakeEl(selL); }
+    status.textContent=done+" von "+n+" Paaren · "+mistakes+" Fehlversuche";
+    if(done===n) finish(ctx, 10*(n-mistakes)/n, el("p",{class:"sub"}, mistakes===0?"Alle Paare ohne Fehlversuch gefunden.":mistakes+" Fehlversuch"+(mistakes===1?"":"e")+"."));
+  }); colR.append(b); });
+  ctx.box.append(status, el("div",{class:"matchgrid"}, colL, colR));
+}
+
+function rOrder(ctx){
+  const t=ctx.t; const n=t.items.length; let next=0, mistakes=0;
+  const seq=el("div",{class:"seq"}); const pool=el("div",{class:"opts"});
+  for(let k=0;k<n;k++) seq.append(el("div",{class:"slot"},"Schritt "+(k+1)));
+  shuffle(t.items.map((s,i)=>({s,i}))).forEach(o=>{
+    const b=el("button",{class:"opt",type:"button"}, el("span",{class:"k"},"?"), el("span",{},o.s));
+    b.addEventListener("click",()=>{
+      if(ctx.done) return;
+      if(o.i===next){ b.remove(); seq.children[next].replaceWith(el("div",{class:"step"}, el("span",{class:"n"},String(next+1)), el("span",{},o.s))); next++;
+        if(next===n) finish(ctx, 10*(n-mistakes)/n, el("p",{class:"sub"}, mistakes===0?"Reihenfolge auf Anhieb richtig.":mistakes+" Fehlversuch"+(mistakes===1?"":"e")+".")); }
+      else { mistakes++; shakeEl(b); }
+    });
+    pool.append(b);
+  });
+  ctx.box.append(seq, el("p",{class:"hint"},"Welcher Schritt kommt als Nächstes?"), pool);
+}
+
+function rMulti(ctx){
+  const t=ctx.t; const opts=shuffle(t.options.map((o,i)=>({o,i}))); const list=el("div",{class:"opts"}); const sel=new Set();
+  opts.forEach(({o,i},k)=>{ const b=el("button",{class:"opt",type:"button","aria-pressed":"false"}, el("span",{class:"k"},String.fromCharCode(65+k)), el("span",{},o)); b.addEventListener("click",()=>{ if(ctx.done) return; if(sel.has(i)){ sel.delete(i); b.classList.remove("is-sel"); b.setAttribute("aria-pressed","false"); } else { sel.add(i); b.classList.add("is-sel"); b.setAttribute("aria-pressed","true"); } }); b.dataset.i=i; list.append(b); });
+  const btn=el("button",{class:"btn",type:"button",onclick:()=>{
+    if(ctx.done) return; const ans=new Set(t.answers); let hits=0, wrong=0, missed=0;
+    [...list.children].forEach(b=>{ const i=+b.dataset.i; b.disabled=true; b.classList.remove("is-sel"); if(ans.has(i)&&sel.has(i)){ hits++; b.classList.add("is-ok"); } else if(!ans.has(i)&&sel.has(i)){ wrong++; b.classList.add("is-bad"); } else if(ans.has(i)){ missed++; b.classList.add("is-missed"); } else b.classList.add("is-lock"); });
+    btn.disabled=true;
+    finish(ctx, 10*(hits-wrong)/ans.size, el("p",{class:"sub"}, hits+" richtig gewählt"+(wrong?", "+wrong+" zu viel":"")+(missed?", "+missed+" übersehen (gestrichelt)":"")+"."));
+  }},"Auswahl prüfen");
+  ctx.box.append(list, el("div",{class:"row"}, btn));
+}
+
+function rDialog(ctx){
+  const t=ctx.t; let i=0, good=0; const tags=new Set(); const chat=el("div",{class:"chat"}); const opts=el("div",{class:"opts"}); const note=el("div");
+  ctx.box.append(chat, opts, note);
+  function turn(){
+    const tr=t.turns[i]; chat.append(el("div",{class:"bubble them"}, el("span",{class:"who"},"Kunde"), tr.them)); opts.innerHTML=""; note.innerHTML="";
+    shuffle(tr.options.slice()).forEach((o,k)=>{ opts.append(el("button",{class:"opt",type:"button",onclick:()=>{
+      if(opts.dataset.lock) return; opts.dataset.lock="1";
+      chat.append(el("div",{class:"bubble me"}, el("span",{class:"who"},"Du"), o.t)); opts.innerHTML=""; delete opts.dataset.lock;
+      if(o.good){ good++; (o.tags||[]).forEach(x=>tags.add(x)); }
+      note.append(el("div",{class:"note "+(o.good?"ok":"bad")}, o.fb));
+      i++;
+      if(i<t.turns.length) note.append(el("div",{class:"row end"}, el("button",{class:"btn ghost",type:"button",onclick:turn},"Weiter im Gespräch")));
+      else {
+        const list=el("ul",{}, t.infos.map((inf,k)=>el("li",{style:"color:"+(tags.has(k)?"var(--ok)":"var(--bad)")}, (tags.has(k)?"✓ ":"✗ ")+inf)));
+        finish(ctx, 10*good/t.turns.length, el("div",{}, el("p",{class:"sub"}, el("b",{},good+" von "+t.turns.length+" Antworten sauber. "), "Die sechs Erstinformationen – welche hast du eingeholt?"), list));
+      }
+      note.scrollIntoView({behavior:"smooth",block:"nearest"});
+    }}, el("span",{class:"k"},String.fromCharCode(65+k)), el("span",{},o.t))); });
+  }
+  turn();
+}
+
+function rSpot(ctx){
+  const t=ctx.t; const need=t.lines.filter(l=>l.bad).length; const sel=new Set();
+  const doc=el("div",{class:"doc"}, el("div",{class:"dhead"},"Angebot · Entwurf"));
+  const status=el("div",{class:"counter"},"0 von "+need+" markiert");
+  t.lines.forEach((l,i)=>{ const b=el("button",{class:"line",type:"button","aria-pressed":"false"},l.t); b.addEventListener("click",()=>{ if(ctx.done) return; if(sel.has(i)){ sel.delete(i); b.classList.remove("is-sel"); b.setAttribute("aria-pressed","false"); } else if(sel.size<need){ sel.add(i); b.classList.add("is-sel"); b.setAttribute("aria-pressed","true"); } else shakeEl(b); status.textContent=sel.size+" von "+need+" markiert"; }); b.dataset.i=i; doc.append(b); });
+  const btn=el("button",{class:"btn",type:"button",onclick:()=>{
+    if(ctx.done||sel.size===0) return; let hits=0, fp=0; const why=[];
+    [...doc.querySelectorAll(".line")].forEach(b=>{ const i=+b.dataset.i, l=t.lines[i]; b.disabled=true; b.classList.remove("is-sel"); if(l.bad&&sel.has(i)){ hits++; b.classList.add("is-ok"); } else if(!l.bad&&sel.has(i)){ fp++; b.classList.add("is-bad"); } else if(l.bad){ b.classList.add("is-missed"); } if(l.bad) why.push(l.why); });
+    btn.disabled=true;
+    finish(ctx, 10*(hits-fp)/need, el("div",{}, el("p",{class:"sub"}, hits+" von "+need+" Fehlern gefunden"+(fp?", "+fp+" falsch markiert":"")+"."), el("ul",{}, why.map(w=>el("li",{},w)))));
+  }},"Angebot prüfen");
+  ctx.box.append(status, doc, el("div",{class:"row"},btn));
+}
+
+function rCompare(ctx){
+  const t=ctx.t; const grid=el("div",{class:"profiles"});
+  t.profiles.forEach((p,i)=>{
+    const b=el("button",{class:"profile",type:"button"},
+      el("div",{class:"pname"},p.name), el("div",{class:"meta"},p.meta), p.badge?el("span",{class:"badge"},p.badge):null,
+      el("ul",{}, p.lines.map(l=>el("li",{},l))), el("div",{class:"meta"},"("+p.note+")"));
+    b.addEventListener("click",()=>{ if(ctx.done) return; [...grid.children].forEach((x,j)=>{ x.disabled=true; if(j===t.answer) x.classList.add("is-ok"); }); if(i!==t.answer) b.classList.add("is-bad"); finish(ctx, i===t.answer?10:0); });
+    grid.append(b);
+  });
+  ctx.box.append(grid);
+}
+
+/* ---- Station fertig / Ende ---- */
+function renderStDone(stage){
+  const s=STATIONS[S.st]; const got=S.stScores[S.st]||0, poss=stationPossible(S.st); const lastStation=S.st===STATIONS.length-1;
+  stage.append(el("div",{class:"card"},
+    el("div",{class:"eyebrow",style:"--seg:"+segVar(S.st)}, el("span",{class:"dot"}), "Station "+(S.st+1)+" geschafft"),
+    el("h1",{class:"title"}, s.name),
+    el("div",{class:"bigscore"}, String(got), el("small",{}," / "+poss+" Punkte")),
+    el("h2",{class:"q",style:"font-size:18px"},"Die drei Merksätze"),
+    el("div",{class:"merk"}, s.merk.map((m,i)=>el("div",{class:"m"}, el("span",{class:"n"},String(i+1)), el("span",{},m)))),
+    el("div",{class:"row"}, el("button",{class:"btn",type:"button",onclick:()=>{ if(lastStation){ S.view="end"; saveBest(); } else { S.st++; S.ti=0; S.view="intro"; } save(); render(); }}, lastStation ? "Zum Ergebnis" : "Weiter zu Station "+(S.st+2)+": "+STATIONS[S.st+1].name))
+  ));
+}
+
+function renderEnd(stage){
+  const pct=Math.round(100*S.score/MAX); const rank=RANKS.find(r=>pct>=r[0]);
+  const nameIn=el("input",{class:"namein",id:"cert-name",type:"text",placeholder:"Dein Name (optional)",value:S.name||"",maxlength:"60"});
+  nameIn.addEventListener("input",()=>{ S.name=nameIn.value; save(); nameEl.textContent=S.name||"Energieberater:in in spe"; });
+  const nameEl=el("div",{style:"font-family:var(--display);font-weight:700;font-size:20px"}, S.name||"Energieberater:in in spe");
+  const copyBtn=el("button",{class:"btn ghost",type:"button",onclick:async()=>{
+    const txt="Vom Zertifikat zum Projekt – "+(S.name?S.name+": ":"")+S.score+"/"+MAX+" Punkte ("+pct+" %), Rang: "+rank[1]+"\n"+STATIONS.map((s,i)=>"  "+s.name+": "+(S.stScores[i]||0)+"/"+stationPossible(i)).join("\n");
+    try{ await navigator.clipboard.writeText(txt); copyBtn.textContent="Kopiert"; }catch(e){ prompt("Ergebnis zum Kopieren:", txt); }
+  }},"Ergebnis kopieren");
+  stage.append(el("div",{class:"card"},
+    el("div",{class:"eyebrow"},"Fahrplan abgeschlossen"),
+    el("div",{class:"cert"},
+      el("div",{class:"eyebrow"},"Bescheinigung · Block 8 Teil 1"),
+      nameEl,
+      el("div",{class:"bigscore"}, String(S.score), el("small",{}," / "+MAX+" Punkte · "+pct+" %")),
+      el("div",{class:"rank"}, rank[1]),
+      el("p",{class:"sub"}, rank[2]),
+      el("div",{class:"bars"}, STATIONS.map((s,i)=>{ const g=S.stScores[i]||0, p=stationPossible(i); return el("div",{class:"bar",style:"--seg:"+segVar(i)}, el("span",{},s.short), el("div",{class:"track"}, el("div",{class:"fill",style:"width:"+Math.round(100*g/p)+"%"})), el("span",{class:"v"},g+"/"+p)); }))
+    ),
+    el("label",{class:"lbl",for:"cert-name"},"Name auf der Bescheinigung", nameIn),
+    el("div",{class:"row"}, copyBtn, el("button",{class:"btn",type:"button",onclick:()=>reset()},"Noch einmal spielen")),
+    best ? el("p",{class:"hint"},"Bestes Ergebnis in diesem Browser: "+best.score+" von "+MAX+" Punkten.") : null
+  ));
+}
+
+/* ---------------- Start ---------------- */
+function start(hot){
+  load();
+  // Beim Laden immer zur Übersicht – von dort aus geht es an der gespeicherten Stelle weiter.
+  if(S.view!=="end") S.view="home";
+  if(hot && hot.view) S=Object.assign(S,hot);
+  if(!["home","intro","task","stdone","end"].includes(S.view)) S.view="home";
+  S.st=clamp(S.st,0,STATIONS.length-1);
+  if(S.ti>STATIONS[S.st].tasks.length) S.ti=STATIONS[S.st].tasks.length;
+  if(S.view==="task" && S.ti>=STATIONS[S.st].tasks.length) S.view="stdone";
+  window.claude?.hot?.snapshot?.(()=>S);
+  render();
+}
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
+</script>
+</body>
+</html>

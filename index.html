@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Das Geheimnis der Wärmebrücke</title>
+<meta name="description" content="Point-and-Click-Adventure zu Block 8 Teil 1: Vom Zertifikat zum ersten Projekt.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#07070f; --panel:#0d0d1c; --line:#23234a; --ink:#e9e6d6; --dim:#8d8aa8;
+  --verb:#6fd67f; --verb-hi:#ffe86b; --inv:#8fc8ff; --gold:#ffd166; --red:#ff6b6b;
+  --font:"VT323","Courier New",monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:20px;line-height:1.2}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{max-width:960px;margin:0 auto;padding-inline:12px;padding-block:8px 24px;display:flex;flex-direction:column;gap:8px;min-height:100%}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:18px;color:var(--dim)}
+.hud b{color:var(--gold);font-weight:normal}
+.hud .btns{display:flex;gap:6px}
+.hud button{background:transparent;border:1px solid var(--line);color:var(--dim);padding:2px 10px;border-radius:4px;font-size:17px}
+.hud button:hover{color:var(--ink);border-color:var(--dim)}
+.screen{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:2px solid var(--line);overflow:hidden;user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;cursor:crosshair}
+canvas.hot{cursor:pointer}
+.speech{position:absolute;transform:translate(-50%,-100%);max-width:62%;text-align:center;font-size:clamp(14px,2.4vw,24px);line-height:1.05;text-shadow:2px 2px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;pointer-events:none;padding:0 6px}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(4,4,12,.78);padding:16px;text-align:center}
+.overlay h1{font-family:var(--font);font-weight:normal;font-size:clamp(28px,6vw,58px);color:var(--gold);margin:0;line-height:1;text-shadow:3px 3px 0 #000}
+.overlay p{margin:0;max-width:48ch;font-size:clamp(15px,2.6vw,22px)}
+.overlay .big{background:var(--gold);color:#221a00;border:0;padding:8px 26px;font-size:clamp(18px,3vw,26px);border-radius:3px;box-shadow:3px 3px 0 #000}
+.overlay .big:hover{filter:brightness(1.08)}
+.overlay ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px;font-size:clamp(14px,2.4vw,20px);text-align:left}
+.overlay .card{background:#0d0d1c;border:1px solid var(--line);padding:12px 16px;max-width:560px;width:100%;display:flex;flex-direction:column;gap:8px;max-height:100%;overflow:auto}
+.sentence{min-height:26px;color:var(--verb-hi);font-size:clamp(16px,3vw,24px);padding:0 4px;text-align:center}
+.controls{display:grid;grid-template-columns:1.2fr 1fr;gap:10px;background:var(--panel);border:2px solid var(--line);padding:8px}
+@media (max-width:560px){.controls{grid-template-columns:1fr}}
+.verbs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.verbs button{background:transparent;border:1px solid transparent;color:var(--verb);font-size:clamp(17px,3vw,26px);padding:6px 4px;text-align:left;border-radius:3px}
+.verbs button:hover,.verbs button.on{color:var(--verb-hi);border-color:var(--line)}
+.inv{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;align-content:start;border-left:1px solid var(--line);padding-left:10px}
+@media (max-width:560px){.inv{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:8px}}
+.inv button{background:transparent;border:1px solid transparent;color:var(--inv);font-size:clamp(16px,2.6vw,22px);padding:5px 6px;text-align:left;border-radius:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inv button:hover,.inv button.on{color:var(--verb-hi);border-color:var(--line)}
+.inv .empty{color:var(--dim);font-size:17px;padding:5px 6px;grid-column:1/-1}
+.choices{display:none;flex-direction:column;gap:2px;grid-column:1/-1}
+.choices.show{display:flex}
+.choices button{background:transparent;border:1px solid transparent;color:var(--inv);text-align:left;font-size:clamp(16px,2.8vw,23px);padding:5px 8px;line-height:1.15;border-radius:3px;text-wrap:pretty}
+.choices button:hover{color:var(--verb-hi);border-color:var(--line)}
+.choices button .n{color:var(--dim);margin-right:8px}
+.controls.choosing .verbs,.controls.choosing .inv{display:none}
+.foot{font-size:16px;color:var(--dim);text-align:center}
+.foot a{color:var(--inv)}
+button:focus-visible{outline:2px solid var(--verb-hi);outline-offset:1px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hud">
+    <div>Konto <b id="konto">1.500 €</b> &nbsp; Punkte <b id="pts">0</b></div>
+    <div class="btns"><button type="button" id="btnNotes">Notizbuch</button><button type="button" id="btnHelp">Hilfe</button><button type="button" id="btnNew">Neu</button></div>
+  </div>
+  <div class="screen" id="screen">
+    <canvas id="cv" width="320" height="180"></canvas>
+    <div class="speech" id="speech" hidden></div>
+    <div class="overlay" id="overlay"></div>
+  </div>
+  <div class="sentence" id="sentence">&nbsp;</div>
+  <div class="controls" id="controls">
+    <div class="verbs" id="verbs"></div>
+    <div class="inv" id="inv"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+  <p class="foot">Ein Lernspiel zu Block 8 Teil 1 · Lieber Quiz statt Abenteuer? <a href="quiz.html">Zum Stationen-Quiz</a></p>
+</div>
+
+<script>
+/* ===================== Grundgerüst ===================== */
+const W=320,H=180;
+const cv=document.getElementById("cv"), g=cv.getContext("2d");
+g.imageSmoothingEnabled=false;
+const $=id=>document.getElementById(id);
+const VERBS=[["gehe","Gehe zu"],["schau","Schau an"],["rede","Rede mit"],["nimm","Nimm"],["benutze","Benutze"],["oeffne","Öffne"]];
+const ITEMS={
+  zeugnis:{n:"Abschlusszeugnis",d:"Mein Hochschulzeugnis. Eines der zwei Dokumente für die Listung."},
+  formular:{n:"Erklärung Weiterbildung",d:"„Erklärung des Anbietenden von Weiterbildungen“ – das Formular der EEE-Liste, vom Kursanbieter ausgefüllt. Dokument Nummer zwei."},
+  zollstock:{n:"Zollstock",d:"Zwei Meter Wahrheit. Für Wanddicken und Fensterlaibungen."},
+  visitenkarten:{n:"Visitenkarten",d:"„Kim Kelvin – Energieberatung“. Für Multiplikatoren."},
+  checkliste:{n:"Checkliste Datenaufnahme",d:"Arbeitshilfe vom Gebäudeforum für die Begehung. Dazu die Checkliste Vertragsgestaltung fürs Angebot."},
+  kamera:{n:"Wärmebildkamera",d:"Herrn Webers Baumarkt-Kamera. Zeigt alles rot, wenn die Sonne scheint."}
+};
+const fresh=()=>({room:"buero",px:150,dir:1,inv:[],flags:{},score:0,konto:1500,started:false});
+let S=fresh();
+let verb=null, useItem=null, hover=null, walking=null, busy=false, frame=0, fade=0, speechRes=null, speechTimer=null, chooseRes=null, blumenkasten=null, ended=false;
+
+function save(){ try{ localStorage.setItem("gdw-save", JSON.stringify(S)); }catch(e){} }
+function load(){ try{ const s=localStorage.getItem("gdw-save"); if(s) S=Object.assign(fresh(),JSON.parse(s)); }catch(e){} }
+function money(v){ return v.toLocaleString("de-DE",{minimumFractionDigits:v%1?2:0,maximumFractionDigits:2})+" €"; }
+function hud(){ $("konto").textContent=money(S.konto); $("pts").textContent=S.score; }
+function addScore(n){ S.score+=n; hud(); save(); }
+function pay(n){ S.konto=Math.round((S.konto-n)*100)/100; hud(); save(); }
+function has(i){ return S.inv.includes(i); }
+function give(i){ if(!has(i)){ S.inv.push(i); renderInv(); save(); } }
+function take(i){ S.inv=S.inv.filter(x=>x!==i); renderInv(); save(); }
+function flag(k,v=true){ S.flags[k]=v; save(); }
+const F=k=>!!S.flags[k];
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ===================== Sprechen & Wählen ===================== */
+const SPEAKERS={
+  kim:{c:"#ffffff",pos:()=>({x:S.px,y:room().floorY-36})},
+  computer:{c:"#7dffb0",pos:()=>({x:220,y:62})},
+  telefon:{c:"#ff9c6b",pos:()=>({x:265,y:80})},
+  praemie:{c:"#f9a8ff",pos:()=>({x:222,y:58})},
+  russ:{c:"#c9c9c9",pos:()=>({x:160,y:112})},
+  zimmermann:{c:"#f4b860",pos:()=>({x:80,y:114})},
+  arch:{c:"#8fd3ff",pos:()=>({x:250,y:114})},
+  weber:{c:"#ffe08a",pos:()=>({x:210,y:122})},
+  bus:{c:"#a0a0ff",pos:()=>({x:300,y:80})}
+};
+function say(who,text){
+  return new Promise(res=>{
+    const sp=SPEAKERS[who]; const p=sp.pos();
+    const el=$("speech"); el.hidden=false; el.style.color=sp.c; el.textContent=text;
+    const x=Math.max(70,Math.min(250,p.x)), y=Math.max(14,p.y);
+    el.style.left=(x/W*100)+"%"; el.style.top=(y/H*100)+"%";
+    const done=()=>{ clearTimeout(speechTimer); speechRes=null; el.hidden=true; res(); };
+    speechRes=done; speechTimer=setTimeout(done, 1500+text.length*55);
+  });
+}
+function choose(opts){
+  return new Promise(res=>{
+    const box=$("choices"); box.innerHTML=""; box.classList.add("show"); $("controls").classList.add("choosing");
+    opts.forEach((o,i)=>box.append(Object.assign(document.createElement("button"),{type:"button",innerHTML:"<span class=n>"+(i+1)+"</span>"+o,onclick:()=>{ box.classList.remove("show"); $("controls").classList.remove("choosing"); box.innerHTML=""; chooseRes=null; res(i); }})));
+    chooseRes=i=>{ const b=box.children[i]; if(b) b.click(); };
+    box.firstChild?.focus({preventScroll:true});
+  });
+}
+/* Frage mit gemischten Antworten; wiederholt bis richtig, Punkte nur beim ersten Versuch */
+async function quiz(who,q,opts,correct,wrong,right){
+  if(q) await say(who,q);
+  let first=true;
+  for(;;){
+    const order=shuffle(opts.map((o,i)=>i)); const pick=await choose(order.map(i=>opts[i])); const i=order[pick];
+    await say("kim",opts[i]);
+    if(i===correct){ if(first) addScore(10); if(right) await say(who,right); return; }
+    first=false; await say(who, typeof wrong==="function"?wrong(i):wrong);
+  }
+}
+/* Zeile des Spielers aus Auswahl */
+async function ask(opts){ const i=await choose(opts); await say("kim",opts[i]); return i; }
+
+/* ===================== Zeichnen ===================== */
+function R(x,y,w,h,c){ g.fillStyle=c; g.fillRect(x|0,y|0,w|0,h|0); }
+function T(x,y,txt,c,size=10,align="center"){ g.fillStyle=c; g.font=size+"px VT323"; g.textAlign=align; g.textBaseline="alphabetic"; g.fillText(txt,x,y); }
+function sky(top,bot,y0,y1){ const n=12; for(let i=0;i<n;i++){ const t=i/(n-1); g.fillStyle=mix(top,bot,t); g.fillRect(0,y0+(y1-y0)*i/n,W,(y1-y0)/n+1); } }
+function mix(a,b,t){ const pa=hex(a),pb=hex(b); return "rgb("+pa.map((v,i)=>Math.round(v+(pb[i]-v)*t)).join(",")+")"; }
+function hex(h){ return [1,3,5].map(i=>parseInt(h.substr(i,2),16)); }
+function win(x,y,w,h,lit){ R(x-1,y-1,w+2,h+2,"#3a2f26"); R(x,y,w,h,lit?"#ffe9a8":"#6f8ea8"); R(x+w/2-1,y,1,h,"#3a2f26"); R(x,y+h/2-1,w,1,"#3a2f26"); }
+function door(x,y,w,h,c){ R(x-2,y-2,w+4,h+2,"#2a2018"); R(x,y,w,h,c); R(x+w-5,y+h/2,2,2,"#ffd166"); }
+function person(x,fy,c,f,dir){
+  g.save(); g.translate(x|0,fy|0); if(dir<0) g.scale(-1,1);
+  const lo=f%2; // Beine
+  R(-4-lo,-11,3,11,c.pants); R(1+lo,-11,3,11,c.pants); R(-5-lo,-2,4,2,c.shoes); R(1+lo,-2,4,2,c.shoes);
+  R(-5,-22,10,11,c.shirt); R(-7,-21,2,8,c.shirt); R(5,-21,2,8,c.shirt); R(-7,-13,2,2,c.skin); R(5,-13,2,2,c.skin);
+  if(c.tie) R(-1,-22,2,6,c.tie);
+  R(-4,-30,8,8,c.skin);
+  if(!c.bald) R(-4,-31,8,3,c.hair); if(c.long) { R(-5,-30,1,7,c.hair); R(4,-30,1,7,c.hair); }
+  R(0,-26,1,1,"#1a1a1a"); R(3,-26,1,1,"#1a1a1a");
+  if(c.glasses){ R(-1,-27,3,3,"#000"); R(2,-27,3,3,"#000"); R(0,-26,1,1,"#cfe"); R(3,-26,1,1,"#cfe"); }
+  if(c.beard) R(-3,-24,7,3,c.beard);
+  if(c.hat==="top"){ R(-4,-38,8,8,"#111"); R(-6,-31,12,2,"#111"); }
+  if(c.hat==="brim"){ R(-3,-35,7,5,c.hatc); R(-6,-31,13,2,c.hatc); }
+  if(c.hat==="helm"){ R(-4,-34,9,4,c.hatc); R(-5,-31,11,2,c.hatc); }
+  if(c.clip){ R(6,-16,5,7,"#f3f3f3"); R(6,-16,5,1,"#333"); }
+  if(c.cam){ R(6,-19,6,5,"#222"); R(8,-18,2,2,"#f66"); }
+  g.restore();
+}
+const KIM={skin:"#f1c9a5",hair:"#4a2e1a",shirt:"#3d7dd8",pants:"#2b2b3d",shoes:"#1a1a1a",clip:true};
+const NPC={
+  praemie:{skin:"#f1c9a5",hair:"#c94f7c",shirt:"#6a3fa0",pants:"#2b2b3d",shoes:"#1a1a1a",glasses:true,long:true},
+  russ:{skin:"#e8b892",hair:"#111",shirt:"#1b1b1b",pants:"#1b1b1b",shoes:"#000",hat:"top",long:true},
+  zimmermann:{skin:"#e8b892",hair:"#6b4a2b",shirt:"#8b5a2b",pants:"#2b2b3d",shoes:"#1a1a1a",hat:"brim",hatc:"#3a2a1a"},
+  arch:{skin:"#d9a577",hair:"#222",shirt:"#e9e9e9",pants:"#333",shoes:"#1a1a1a",glasses:true,tie:"#c33"},
+  weber:{skin:"#f1c9a5",hair:"#ccc",shirt:"#c9a13a",pants:"#5a4b3a",shoes:"#1a1a1a",bald:true,beard:"#bbb",cam:true},
+  fahrer:{skin:"#f1c9a5",hair:"#333",shirt:"#3a3a5a",pants:"#222",shoes:"#000",hat:"brim",hatc:"#3a3a5a"}
+};
+
+/* ===================== Räume ===================== */
+const ROOMS={
+buero:{ name:"Dein Büro", floorY:150, npcs:[],
+  draw(){
+    R(0,0,W,120,"#d8c8a2"); for(let y=0;y<120;y+=12) R(0,y,W,1,"#cdbd96");
+    R(0,120,W,60,"#8b5a2b"); for(let x=0;x<W;x+=16) R(x,120,1,60,"#6f4520"); for(let y=120;y<180;y+=10) R(0,y,W,1,"#7a4d24");
+    R(0,118,W,3,"#5a3a1a");
+    // Fenster
+    R(18,18,66,54,"#3a2f26"); g.save(); g.beginPath(); g.rect(20,20,62,50); g.clip(); sky("#7ec8ff","#cfefff",20,70); R(20,58,62,12,"#7fae5a"); R(30,40,12,8,"#fff"); R(38,36,14,8,"#fff"); R(60,30,10,6,"#fff"); g.restore(); R(50,20,2,50,"#3a2f26"); R(20,44,62,2,"#3a2f26");
+    // Zertifikat
+    R(108,24,44,32,"#b8892e"); R(111,27,38,26,"#fbf6e6"); R(115,31,30,2,"#333"); R(118,36,24,1,"#777"); R(118,39,24,1,"#777"); R(118,42,18,1,"#777"); R(136,44,7,7,"#c33");
+    T(130,52,"ZERT.","#333",8);
+    // Aktenschrank
+    R(88,92,34,58,"#8a8f99"); for(let i=0;i<3;i++){ R(91,96+i*18,28,14,"#a4a9b3"); R(102,102+i*18,6,2,"#444"); }
+    // Pflanze
+    R(28,136,16,14,"#b5533c"); R(30,124,12,12,"#3f8f3f"); R(24,118,10,10,"#4aa34a"); R(40,120,10,10,"#4aa34a");
+    // Schreibtisch
+    R(168,100,126,6,"#6f4520"); R(172,106,6,44,"#5a3a1a"); R(284,106,6,44,"#5a3a1a"); R(170,106,122,2,"#4a2e14");
+    // Monitor
+    R(198,68,46,32,"#2b2b33"); R(201,71,40,25,F("pcOn")?"#0e2a1a":"#0b0b12"); if(F("pcOn")){ R(204,74,20,2,"#7dffb0"); R(204,78,30,2,"#7dffb0"); R(204,82,14,2,"#7dffb0"); R(204,88,4,2,frame%40<20?"#7dffb0":"#0e2a1a"); }
+    R(216,100,10,3,"#1b1b22"); R(206,96,30,4,"#3a3a44"); R(250,92,30,8,"#3a3a44"); for(let i=0;i<5;i++) R(252+i*6,94,4,4,"#666");
+    // Telefon
+    R(256,86,24,6,"#b1262b"); R(258,80,20,6,"#d13a3f"); R(262,82,12,2,"#7a1a1a"); if(F("weberTipp")&&!F("callDone")&&frame%30<15) T(268,76,"RING","#ff6b6b",8);
+    // Post
+    if(!F("postTaken")){ R(174,92,20,8,"#f0e6c8"); R(176,90,20,8,"#fff8e6"); R(180,92,10,1,"#c33"); }
+    // Tür
+    door(292,60,26,90,"#8b5a2b"); R(296,64,18,40,"#7a4a20");
+  },
+  hot:[
+    {id:"fenster",n:"Fenster",x:18,y:18,w:66,h:54,walk:50,schau:async()=>say("kim","Draußen: der Marktplatz. Und eine Wolke, die aussieht wie eine Wärmebrücke. Berufskrankheit.")},
+    {id:"zert",n:"Zertifikat",x:108,y:24,w:44,h:32,walk:130,schau:async()=>{ await say("kim","Mein Zertifikat. Frisch gerahmt."); await say("kim","Damit darf ich jetzt Förderanträge stellen? Nein. Erst mit dem Eintrag auf der EEE-Liste. Ohne Listung keine Anträge."); },
+      nimm:async()=>say("kim","Das bleibt an der Wand. Für die Listung brauche ich mein Abschlusszeugnis, nicht das Kurszertifikat.")},
+    {id:"schrank",n:"Aktenschrank",x:88,y:92,w:34,h:58,walk:112,def:"oeffne",schau:async()=>say("kim","Mein Aktenschrank. Drei Schubladen: Zeugnisse, Zollstöcke, Zweifel."),
+      oeffne:async()=>{ if(has("zeugnis")&&has("zollstock")){ await say("kim","Nur noch Zweifel drin."); return; } give("zeugnis"); give("zollstock"); await say("kim","Mein Hochschulzeugnis. Und ein Zollstock, der schon mehr Wände gesehen hat als ich."); },
+      nimm:async()=>ROOMS.buero.hot[2].oeffne()},
+    {id:"pflanze",n:"Pflanze",x:22,y:116,w:26,h:34,walk:44,schau:async()=>say("kim","Sie steht direkt an der Außenwand. Ungedämmt. Sie friert, ich sehe es."),nimm:async()=>say("kim","Die bleibt. Sie ist mein einziger Kollege.")},
+    {id:"pc",n:"Computer",x:196,y:66,w:50,h:36,walk:212,def:"benutze",schau:async()=>say("kim","Mein Rechner. Beratersoftware, Browser, und ein Ordner namens „Später“."),benutze:computer,
+      use:async it=>{ if(it==="zeugnis"||it==="formular"){ await say("kim","Hochladen geht über die Webseite der EEE-Liste. Ich benutze den Computer."); } else await say("kim","Das gehört nicht an den Computer."); }},
+    {id:"tel",n:"Telefon",x:254,y:78,w:28,h:16,walk:262,def:"benutze",schau:async()=>say("kim","Mein Geschäftstelefon. Es hat noch nie geklingelt. Bisher."),benutze:telefon,rede:telefon},
+    {id:"post",n:"Post",x:172,y:88,w:26,h:14,walk:186,def:"nimm",cond:()=>!F("postTaken"),schau:async()=>say("kim","Ein Umschlag von der EEE-Liste. Und Werbung für Wärmebildkameras."),
+      nimm:async()=>{ flag("postTaken"); give("formular"); await say("kim","Die „Erklärung des Anbietenden von Weiterbildungen“ – vom Kursanbieter unterschrieben. Dokument Nummer zwei für die Listung."); await say("kim","Die Kamera-Werbung wandert ins Altpapier."); },
+      oeffne:async()=>ROOMS.buero.hot[6].nimm()},
+    {id:"tuer",n:"Tür zum Marktplatz",x:290,y:58,w:30,h:92,walk:300,def:"gehe",exit:{room:"markt",x:22},schau:async()=>say("kim","Da draußen sind die Kunden. Angeblich.")}
+  ],
+  onEnter:async()=>{ if(!F("intro")){ flag("intro"); await say("kim","Zertifikat an der Wand. Konto: 1.500 Euro. Kunden: null."); await say("kim","Zeit, das zu ändern. Ich brauche mein erstes Projekt."); await say("kim","Vielleicht erst mal die Post öffnen. Und dann: Listung, Registrierung, Versicherung. In dieser Reihenfolge, laut Kurs."); } }
+},
+markt:{ name:"Marktplatz", floorY:160, npcs:[],
+  draw(){
+    sky("#6fb6ff","#dff1ff",0,110); R(0,110,W,70,"#7d7d86"); for(let y=112;y<180;y+=6){ for(let x=(y/6%2)*5;x<W;x+=10) R(x,y,8,4,"#8c8c96"); }
+    // Assekuranz (links)
+    R(0,30,96,82,"#cfa7a0"); R(0,26,96,6,"#8b4a3c"); win(10,44,18,16); win(40,44,18,16); win(70,44,18,16); win(10,74,18,16,true); win(70,74,18,16); door(32,82,26,30,"#5a3a1a");
+    R(6,60,84,12,"#5a2e2a"); T(48,70,"ASSEKURANZ PRÄMIE","#ffd9c9",9);
+    // Rathaus (mitte)
+    R(100,20,102,92,"#e6dcc3"); R(96,14,110,8,"#8a2f2f"); R(140,0,22,16,"#8a2f2f"); R(146,4,10,8,"#f7f3e6"); R(150,6,2,4,"#333"); R(150,8,3,1,"#333");
+    win(108,34,16,18); win(136,34,30,18); win(178,34,16,18); win(108,66,16,18); win(178,66,16,18); door(138,72,26,40,"#3a3a3a"); R(140,74,22,3,"#c33");
+    T(151,32,"RATHAUS","#5a2e2a",9);
+    // Litfaßsäule
+    R(206,64,12,48,"#8b6f4a"); R(204,60,16,6,"#4a3a2a"); R(207,70,10,14,"#f4e2a0"); R(207,88,10,14,"#c7e8ff"); R(208,73,8,1,"#333"); R(208,76,8,1,"#333"); R(208,92,8,1,"#333");
+    // Kneipe (rechts)
+    R(224,36,76,76,"#6b4a2b"); R(220,30,84,8,"#3a2a1a"); win(232,50,18,14,true); win(276,50,18,14,true); door(246,80,26,32,"#3a2413"); R(228,64,68,12,"#2a1a0a"); T(262,74,"ZUM WÄRMELECK","#ffd166",10);
+    R(230,90,12,20,"#2e6b2e"); R(228,86,16,6,"#1e4a1e");
+    // Haltestelle
+    R(306,70,3,42,"#444"); R(298,60,20,14,"#1e6b3a"); T(308,71,"823","#fff",10); R(300,110,20,4,"#555");
+  },
+  hot:[
+    {id:"back",n:"Zurück ins Büro",x:0,y:110,w:18,h:70,walk:10,def:"gehe",exit:{room:"buero",x:290}},
+    {id:"assek",n:"Assekuranz Prämie",x:30,y:80,w:30,h:32,walk:45,def:"gehe",exit:{room:"versicherung",x:30},schau:async()=>say("kim","„Assekuranz Prämie – Wir tauschen Ihr unbekanntes Risiko gegen ein bekanntes.“ Klingt nach Versicherung.")},
+    {id:"rathaus",n:"Bauaufsichtsbehörde",x:136,y:70,w:30,h:42,walk:151,def:"oeffne",schau:async()=>say("kim","Bauaufsichtsbehörde. Hier landen die Stichprobenkontrollen der Stufen 2 und 3. Rechtsgrundlage § 99 Abs. 6 GModG."),
+      oeffne:async()=>{ await say("kim","Zu. Ein Schild: „Rückfragen zu Energieausweisen nur schriftlich.“"); await say("kim","Stimmt. Und ohne Aufforderung des Amtes wird kein Ausweis neu ausgestellt."); }},
+    {id:"saeule",n:"Litfaßsäule",x:204,y:60,w:16,h:52,walk:196,schau:async()=>{ await say("kim","Plakat eins: „Heim+Handwerk – die Messe.“ Plakat zwei: „BDB – Kammern und Verbände.“"); await say("kim","Messen besuchen, Verbände ansprechen. Aktive Akquise. Und unten: „Steht Ihr Betrieb bei Google Maps?“ Passive Akquise."); },
+      nimm:async()=>say("kim","Ich reiße keine Plakate ab. Ich hänge höchstens welche auf.")},
+    {id:"kneipe",n:"Zum Wärmeleck",x:244,y:78,w:30,h:34,walk:259,def:"gehe",exit:{room:"kneipe",x:30},schau:async()=>say("kim","Die Kneipe „Zum Wärmeleck“. Heute: GIH-Stammtisch. Da sitzen die Leute, die Häuser von innen kennen.")},
+    {id:"bus",n:"Haltestelle Linie 823",x:296,y:58,w:24,h:56,walk:296,def:"benutze",schau:async()=>say("kim","Linie 823. Fährt zum Mühlenweg. Warum die Nummer mir so bekannt vorkommt, weiß ich auch nicht."),
+      benutze:bus,gehe:bus}
+  ]
+},
+versicherung:{ name:"Assekuranz Prämie", floorY:150, npcs:[{k:"praemie",x:222,fy:118,dir:-1}],
+  draw(){
+    R(0,0,W,120,"#d9d2e9"); for(let y=0;y<120;y+=14) R(0,y,W,1,"#cdc5e0"); R(0,120,W,60,"#5a5a6e"); for(let y=120;y<180;y+=8) R(0,y,W,1,"#4e4e60"); R(0,118,W,3,"#3a3a4a");
+    // Plakat
+    R(40,24,90,60,"#fff"); R(42,26,86,56,"#f7f3ff"); T(85,40,"VERSICHERUNG =","#3a2a6a",10); T(85,52,"bekanntes kleines Risiko","#333",9); T(85,62,"gegen","#333",9); T(85,72,"unbekanntes Risiko","#333",9);
+    // Verstoß-Poster
+    R(150,26,60,44,"#e8f0ff"); T(180,40,"VERSTOSS-","#1d3a7a",10); T(180,52,"THEORIE","#1d3a7a",10); R(156,58,48,1,"#1d3a7a"); T(180,66,"§ 823 BGB","#1d3a7a",8);
+    // Tresen
+    R(150,118,160,34,"#7a4b2a"); R(148,114,164,6,"#5a3a1a"); R(160,124,40,16,"#fff"); T(180,136,"PRÄMIE","#7a4b2a",10);
+    door(4,56,26,94,"#4a3a5a");
+    // Pflanze
+    R(300,130,14,20,"#446"); R(298,118,18,14,"#3f8f3f");
+  },
+  hot:[
+    {id:"tuer",n:"Tür zum Marktplatz",x:2,y:54,w:30,h:96,walk:16,def:"gehe",exit:{room:"markt",x:45}},
+    {id:"plakat",n:"Plakat",x:40,y:24,w:90,h:60,walk:85,schau:async()=>say("kim","„Versicherung = ich tausche ein bekanntes, kleines Risiko – die Prämie – gegen ein mir unbekanntes Risiko.“ Das Grundprinzip.")},
+    {id:"poster",n:"Poster Verstoß-Theorie",x:150,y:26,w:60,h:44,walk:170,schau:async()=>{ await say("kim","Betriebshaftpflicht: Schadensereignis und Schadenseintritt fallen sofort zusammen. Blumentopf trifft Passanten."); await say("kim","Vermögensschadenhaftpflicht: Der Verstoß in der Beratung ist der Auslöser – der Schaden zeigt sich oft erst später."); }},
+    {id:"praemie",n:"Frau Prämie",x:208,y:80,w:30,h:40,walk:180,def:"rede",schau:async()=>say("kim","Frau Prämie. Sie sieht aus, als könnte sie mein Schadenspotenzial schätzen, ohne dass ich etwas sage."),rede:praemie}
+  ]
+},
+kneipe:{ name:"Zum Wärmeleck", floorY:152, npcs:[{k:"zimmermann",x:80,fy:152,dir:1},{k:"russ",x:160,fy:152,dir:-1},{k:"arch",x:250,fy:152,dir:-1}],
+  draw(){
+    R(0,0,W,120,"#3a2417"); for(let x=0;x<W;x+=20) R(x,0,1,120,"#2e1c11"); R(0,120,W,60,"#2a1a10"); for(let y=120;y<180;y+=8) R(0,y,W,1,"#221408");
+    // Bar hinten
+    R(20,70,280,4,"#6b4a2b"); R(20,74,280,40,"#4a3218"); for(let i=0;i<9;i++){ R(30+i*30,52,6,18,["#8fd","#fd8","#f88","#8f8"][i%4]); R(29+i*30,50,8,3,"#333"); }
+    R(20,44,280,4,"#6b4a2b"); R(20,48,280,22,"#5a3a1a");
+    // Schild
+    R(110,8,100,26,"#1e4a1e"); R(112,10,96,22,"#2e6b2e"); T(160,20,"HEUTE:","#ffd166",9); T(160,30,"GIH-STAMMTISCH","#fff",10);
+    // Dartscheibe
+    R(268,14,24,24,"#111"); R(272,18,16,16,"#c33"); R(276,22,8,8,"#fff"); R(279,25,2,2,"#c33");
+    // Tische
+    R(40,120,50,4,"#5a3a1a"); R(60,124,6,26,"#4a2e14"); R(230,120,50,4,"#5a3a1a"); R(250,124,6,26,"#4a2e14");
+    door(4,58,24,94,"#2a1a0a");
+    // Bierkrug
+    R(68,110,8,10,"#f4c542"); R(76,112,2,6,"#f4c542"); R(68,108,8,3,"#fff");
+  },
+  hot:[
+    {id:"tuer",n:"Tür zum Marktplatz",x:2,y:56,w:28,h:96,walk:18,def:"gehe",exit:{room:"markt",x:259}},
+    {id:"schild",n:"Schild",x:110,y:8,w:100,h:26,walk:160,def:"schau",schau:async()=>{ await say("kim","„GIH-Stammtisch – Gäste willkommen.“ Mitglied werden in lokalen Energieverbänden wie GIH oder DEN: aktive Akquise."); if(!F("gih")){ const i=await ask(["Ich trete dem GIH bei.","Verbände sind nichts für mich."]); if(i===0){ flag("gih"); addScore(10); await say("kim","Beitritt erledigt. Und als Mitglied eines Netzwerkpartners ist sogar die EEE-Registrierung vergünstigt."); } else await say("kim","Vielleicht später. Der Stammtisch riecht nach Bier und Kontakten."); } },
+      benutze:async()=>ROOMS.kneipe.hot[1].schau()},
+    {id:"dart",n:"Dartscheibe",x:268,y:14,w:24,h:24,walk:250,schau:async()=>say("kim","Bullseye. Genau da will ich mit dem ersten Angebot hin.")},
+    {id:"krug",n:"Bierkrug",x:66,y:106,w:14,h:16,walk:74,schau:async()=>say("kim","Gehört dem Zimmerer. Er beobachtet mich."),nimm:async()=>say("kim","Nein. Das wäre ein Schadensfall nach § 823 BGB: vorsätzlich.")},
+    {id:"zimmermann",n:"Zimmermann",x:68,y:112,w:24,h:40,walk:100,def:"rede",schau:async()=>say("kim","Ein Zimmerer. Er ist in jedem Dachstuhl der Stadt, bevor die Eigentümer wissen, dass sie einen haben."),rede:zimmermann,
+      use:async it=>{ if(it==="visitenkarten") return zimmermannKarte(); await say("kim","Das interessiert ihn nicht."); }},
+    {id:"russ",n:"Frau Ruß",x:148,y:104,w:24,h:48,walk:132,def:"rede",schau:async()=>say("kim","Frau Ruß, Schornsteinfegerin. Sie kennt jede Heizung im Ort beim Vornamen."),rede:russ,
+      use:async it=>{ if(it==="visitenkarten"){ await say("russ","Behalt die. Ich merke mir Leute, nicht Karten."); return; } await say("kim","Damit kann sie nichts anfangen."); }},
+    {id:"arch",n:"Architektin",x:238,y:112,w:24,h:40,walk:222,def:"rede",schau:async()=>say("kim","Eine Architektin. Krawatte, Brille, Bauantrag im Blick."),rede:arch,
+      use:async it=>{ if(it==="visitenkarten"){ if(!F("archKarte")){ flag("archKarte"); await say("arch","Danke. Ich lege sie zu den anderen vierzig."); await say("kim","Dann muss meine besser sein. Kooperationsangebot folgt per Mail."); } else await say("arch","Habe ich schon."); return; } await say("kim","Nein."); }}
+  ]
+},
+weber:{ name:"Mühlenweg 4", floorY:160, npcs:[{k:"weber",x:210,fy:160,dir:-1}],
+  draw(){
+    if(ended) sky("#ff9a5a","#3a2a6a",0,120); else sky("#7ec8ff","#e8f6ff",0,120);
+    R(0,120,W,60,"#6c8f4a"); for(let x=0;x<W;x+=7) R(x,124+(x%3),2,2,"#5a7a3a"); R(120,130,90,50,"#9a8f7a"); for(let y=130;y<180;y+=8) R(120,y,90,1,"#877c68");
+    // Haus
+    R(60,50,200,80,"#e9d98a"); R(58,128,204,4,"#7a6a3a");
+    R(56,34,208,18,"#a33a2a"); for(let x=56;x<264;x+=8) R(x,34,1,18,"#8a2e20"); R(52,50,216,4,"#7a2a1a"); R(200,18,14,20,"#7a4a3a"); R(198,16,18,4,"#5a3a2a");
+    if(F("dachDone")) R(80,38,18,10,"#c9c1a0");
+    [[70,60],[110,60],[150,60],[190,60],[230,60],[70,90],[150,90],[190,90],[230,90]].forEach(([x,y])=>win(x,y,22,18));
+    // Fenster mit Blumenkasten (links Mitte)
+    R(108,88,26,22,"#3a2f26"); R(110,90,22,18, F("fensterOpen")?"#1b1b22":"#6f8ea8"); if(!F("fensterOpen")){ R(120,90,1,18,"#3a2f26"); R(110,98,22,1,"#3a2f26"); }
+    if(!F("kastenDown")){ R(106,108,30,7,"#8b3a2a"); R(108,104,4,4,"#e34"); R(114,103,4,5,"#fd5"); R(120,104,4,4,"#e34"); R(126,103,4,5,"#f8a"); }
+    if(blumenkasten){ R(106,blumenkasten.y,30,7,"#8b3a2a"); R(108,blumenkasten.y-4,4,4,"#e34"); R(120,blumenkasten.y-4,4,4,"#e34"); }
+    if(F("kastenDown")&&!blumenkasten){ R(100,154,14,5,"#8b3a2a"); R(118,156,18,4,"#8b3a2a"); R(112,152,3,3,"#e34"); R(130,150,3,3,"#fd5"); R(108,158,20,1,"#5a2a1a"); }
+    door(148,100,26,30,"#5a3a1a"); R(150,102,22,4,"#4a2e14"); R(140,96,42,4,"#7a6a3a");
+    // Kellerfenster
+    R(78,118,22,10,"#2a2a2a"); R(80,120,18,6,"#111"); R(88,120,1,6,"#444");
+    // Klingelschild
+    R(178,104,10,14,"#ddd"); for(let i=0;i<4;i++) R(180,106+i*3,6,1,"#666");
+    // Haltestelle
+    R(14,80,3,50,"#444"); R(6,70,20,14,"#1e6b3a"); T(16,81,"823","#fff",10);
+    if(ended){ T(160,172,"ENDE","#ffd166",14); }
+  },
+  hot:[
+    {id:"bus",n:"Haltestelle",x:4,y:68,w:24,h:62,walk:24,def:"gehe",exit:{room:"markt",x:290},schau:async()=>say("kim","Die 823 zurück in die Stadt.")},
+    {id:"dach",n:"Dach",x:56,y:16,w:208,h:36,walk:90,schau:async()=>{ if(!F("dachDone")){ flag("dachDone"); await say("kim","Dachboden unbeheizt, Dämmung: keine. Da oben ist ein Loch in der Dachhaut, groß wie ein Zollstock."); await say("kim","Der Zimmerer hatte recht. Notiert."); checkEnd(); } else await say("kim","Das Loch ist noch da. Es wartet auf den Zimmerer."); }},
+    {id:"fenster",n:"Fenster mit Blumenkasten",x:104,y:86,w:34,h:30,walk:94,def:"oeffne",schau:async()=>{ if(F("kastenDown")) await say("kim","Das Fenster ist offen. Der Blumenkasten liegt auf dem Gehweg. Niemand wurde getroffen."); else await say("kim","Ein Fenster im Erdgeschoss. Davor ein Blumenkasten. Genau wie im Kurs. Ich habe ein ungutes Gefühl."); },
+      oeffne:fensterOeffnen,
+      use:async it=>{ if(it==="zollstock"){ if(!F("fensterOpen")){ await say("kim","Die Wanddicke messe ich in der Fensterlaibung. Dafür muss das Fenster auf."); return; } if(!F("fensterDone")){ flag("fensterDone"); addScore(10); await say("kim","Wanddicke: 36,5 Zentimeter. Vollziegel, ungedämmt. Innen 21 Grad, außen Wärmebrücke."); checkEnd(); } else await say("kim","Immer noch 36,5 Zentimeter."); } else if(it==="kamera"){ await say("kim","Von innen nach außen? Bei Sonne? Das gibt ein schönes rotes Bild ohne Aussage."); } else await say("kim","Das bringt am Fenster nichts."); }},
+    {id:"tuer",n:"Haustür",x:146,y:98,w:30,h:32,walk:161,def:"oeffne",schau:async()=>say("kim","Haustür, vier Klingeln. Vier Wohnungen, alle vermietet."),oeffne:async()=>say("kim","Herr Weber führt mich herum, wenn die Außenaufnahme fertig ist. Erst Dach, Fassade, Keller.")},
+    {id:"keller",n:"Kellerfenster",x:76,y:116,w:26,h:14,walk:90,schau:async()=>{ if(!F("heizungDone")){ flag("heizungDone"); await say("kim","Da unten: Gasheizung, Baujahr 1994. Sie klingt wie ein Schiffsdiesel und heizt vermutlich den Keller gleich mit."); await say("kim","Notiert. Frau Ruß hatte das erwähnt, glaube ich, mit einem Seufzer."); checkEnd(); } else await say("kim","Der Schiffsdiesel tuckert weiter."); },
+      oeffne:async()=>say("kim","Zu. Und ich klettere nicht durch Kellerfenster. Das wäre grob fahrlässig.")},
+    {id:"weber",n:"Herr Weber",x:196,y:120,w:28,h:40,walk:186,def:"rede",schau:async()=>say("kim","Herr Weber. Eigentümer, wohnt selbst nicht hier, hält eine Wärmebildkamera wie ein Schwert."),rede:weberTalk,
+      use:async it=>{ if(it==="checkliste") return datenaufnahme(); if(it==="zollstock") return say("kim","Herrn Weber messe ich nicht."); if(it==="kamera") return say("kim","Ich gebe sie ihm gleich zurück. Mit Erklärung."); await say("kim","Nein."); }}
+  ],
+  onEnter:async()=>{ if(!F("weberHello")){ flag("weberHello"); await say("weber","Kim Kelvin? Endlich! Kommen Sie, kommen Sie. Ich habe extra eine Wärmebildkamera gekauft!"); await say("kim","Guten Tag, Herr Weber. Schön, dass wir uns persönlich kennenlernen."); await say("kim","Vor-Ort-Begehung, Schritt eins: persönliches Kennenlernen. Schritt zwei: Sanierungsziel. Dann Daten."); } }
+}
+};
+const room=()=>ROOMS[S.room];
+
+/* ===================== Skripte: Computer ===================== */
+async function computer(){
+  flag("pcOn");
+  await say("computer","Guten Tag, Kim. Wohin?");
+  for(;;){
+    const opts=["energie-effizienz-experten.de","DIBt – GEG-Benutzerkonto","Google Maps – Unternehmensprofil","Gebäudeforum – Arbeitshilfen"];
+    if(F("callDone")&&!F("angebot")) opts.push("Angebot für Herrn Weber schreiben");
+    opts.push("Ausschalten");
+    const i=await choose(opts);
+    if(opts[i]==="Ausschalten"){ flag("pcOn",false); await say("kim","Bildschirm aus. Der Ordner „Später“ bleibt zu."); return; }
+    if(i===0) await eee(); else if(i===1) await dibt(); else if(i===2) await maps(); else if(i===3) await forum(); else await angebot();
+  }
+}
+async function eee(){
+  await say("computer","Energie-Effizienz-Experten-Liste. Registrierung und Profil.");
+  if(F("listed")){ await say("computer","Dein Profil ist online. Aufrufe diese Woche: 3. Einer davon warst du."); await say("computer","Zur Erinnerung: Mit diesen Zugangsdaten stellst du auch Anträge bei BAFA und KfW."); return; }
+  if(!has("zeugnis")||!has("formular")){
+    await say("computer","Bitte hochladen: 1. Erklärung des Anbietenden von Weiterbildungen. 2. Abschlusszeugnis einer Hochschule oder Universität.");
+    await say("kim","Mir fehlt noch: "+(!has("formular")?"das Formular der EEE-Liste":"")+(!has("formular")&&!has("zeugnis")?" und ":"")+(!has("zeugnis")?"mein Abschlusszeugnis":"")+".");
+    return;
+  }
+  await say("computer","Dokumente geprüft: Erklärung Weiterbildung, Abschlusszeugnis. Modul: Wohngebäude. Eintragung über Weiterbildung.");
+  await quiz("computer","Gebühren für das erste Jahr, netto. Welcher Betrag ist korrekt?",
+    ["220 € – 100 € Prüfung plus 120 € Jahresbeitrag","100 € – nur die Prüfung, der Rest ist kostenlos","420 € – Prüfung, Referenzzuschlag und Jahresbeitrag","0 € – die Listung ist kostenlos"],0,
+    i=>i===2?"Der Zuschlag von 200 € fällt nur bei Eintragung über Referenzen an. Du kommst über die Weiterbildung.":i===1?"Der Jahresbeitrag von 120 € für ein Modul kommt dazu. Und alles zzgl. 19 % MwSt.":"Die Listung ist kostenpflichtig. Prüfung einmalig 100 € je Modul, Jahresbeitrag 120 €.",
+    "Korrekt. 220 € netto, 261,80 € mit 19 % MwSt. Zahlung wird abgebucht.");
+  pay(261.8);
+  await say("kim","Eine echte Investition. Und nächstes Jahr wieder 120 Euro. Plus Nebenadressen, falls ich mal expandiere: 10 Euro pro Stück, maximal vier.");
+  await say("computer","Profil anlegen. Wähle deine Kurzbeschreibung.");
+  await quiz("computer",null,
+    ["Energieberatung für Ein- und Mehrfamilienhäuser in Musterstadt und Umgebung. Schwerpunkt iSFP und Baubegleitung – vom ersten Gespräch bis zum Förderantrag. Netzwerkpartner GIH.","Kim Kelvin, Energieberatung, Musterstadt. Modul Wohngebäude.","Beratung. Anrufen. Danke."],0,
+    "Formal in Ordnung. Aber ein Profil mit nur Pflichtangaben ist „OK“. Eines mit Spezialisierung, Region, Arbeitsweise und Netzwerkpartner-Logo ist deutlich besser. Der erste Eindruck zählt.",
+    "Profil gespeichert. Damit hebst du dich von der Konkurrenz ab.");
+  flag("listed");
+  await say("computer","Dein Antrag wird nach Eingangsdatum bearbeitet. Bearbeitungsdauer: je nachdem, wie früh du dran warst.");
+  await say("kim","Gut, dass ich früh dran bin. Jetzt: DIBt für die Energieausweise. Und dann zur Versicherung, bevor ich irgendein Fenster öffne.");
+}
+async function dibt(){
+  await say("computer","Deutsches Institut für Bautechnik. GEG-Benutzerkonto. Registriernummern für Energieausweise.");
+  if(F("dibt")){ await say("computer","Bestand: 1 Registriernummer. Hinweis: Der Energieausweis nach GModG ist noch nicht verfügbar."); return; }
+  await say("computer","Vor der ersten Bestellung: drei Kontrollfragen.");
+  await quiz("computer","Was kostet eine Registriernummer?",["6,90 €","69 €","100 € je Modul"],0,"Nein. 6,90 € pro Nummer. Die 100 € gehören zur EEE-Liste.","Richtig.");
+  await quiz("computer","Stufe 1 der Ausweiskontrolle durch das DIBt ...",["... ist rein statistisch und führt zu keinerlei Rückfragen.","... ist Voraussetzung für die Stufen 2 und 3.","... meldet Fehler an die Bauaufsichtsbehörde."],0,"Nein. Stufe 1 dient ausschließlich statistischen Zwecken. Nur die Ausweisnummern gehen an die Behörde. Und Stufe 1 ist nicht Voraussetzung für 2 und 3 – unabhängige Stichproben.","Richtig. Bei Stichproben lädst du meist eine XML-Datei aus der Beratersoftware hoch.");
+  await quiz("computer","Die Bauaufsichtsbehörde hat eine Rückfrage zu deinem Ausweis. Du ...",["... antwortest schriftlich und stellst nicht ohne Aufforderung neu aus.","... stellst den Ausweis sicherheitshalber sofort neu aus.","... rufst kurz an. Das reicht."],0,"Nein. Rückfragen werden schriftlich beantwortet, und ohne Aufforderung des Amtes gibt es keinen neuen Ausweis. Bußgeld bei Zuwiderhandlung: bis 5.000 €.","Richtig. Und die Übergabe an den Eigentümer macht den Ausweis rechtskräftig.");
+  pay(6.9); flag("dibt");
+  await say("computer","Bestellt: 1 Registriernummer, 6,90 €. Hinweis: Der Energieausweis nach GModG ist noch nicht verfügbar. Das betrifft Registrierung und Kontrollverfahren.");
+  await say("kim","Dann bestelle ich die Geduld gleich mit.");
+}
+async function maps(){
+  if(F("maps")){ await say("computer","Dein Eintrag ist online. Bewertungen: 0. Fotos: 1, dein Zollstock."); return; }
+  await say("computer","Unternehmensprofil anlegen: Kim Kelvin Energieberatung. Kategorie: Energieberater. Öffnungszeiten: nach Vereinbarung.");
+  flag("maps"); addScore(10);
+  await say("kim","Passive Akquise: Ich sorge dafür, gefunden zu werden. Jetzt muss mich nur noch jemand suchen.");
+}
+async function forum(){
+  await say("computer","Gebäudeforum Klimaneutral. Arbeitshilfen: Checkliste Datenaufnahme, Checkliste Vertragsgestaltung, virtuelle Gebäudebegehung der Uni Kassel.");
+  if(!has("checkliste")){ give("checkliste"); await say("kim","Ausgedruckt: Checkliste Datenaufnahme für die Begehung. Und die Checkliste Vertragsgestaltung fürs Angebot."); }
+  else await say("kim","Habe ich schon. Die virtuelle Begehung schaue ich mir heute Abend an – als Übung.");
+}
+async function angebot(){
+  await say("computer","Angebotsvorlage für Herrn Weber. Wähle, was ins Angebot gehört. Schicke ab, wenn es vollständig ist.");
+  const good=["Vertragsparteien und Objekt festhalten","Leistung klar und präzise beschreiben","Transparente Preisgestaltung","Förderbedingungen und Subventionshöhe erläutern","Klare Zahlungsbedingungen und Fristen","Datenschutz und Vertraulichkeit zusichern"];
+  const bad={"Fachbegriffe häufen, damit es seriös wirkt":"Nein. Verständliche, leichte Sprache. Herr Weber soll es lesen, nicht übersetzen.","Preis erst nach dem Termin nennen":"Nein. Transparente Preisgestaltung gehört ins Angebot.","Zusatzleistungen mündlich vereinbaren":"Nein. Abweichende Leistungen werden vertraglich festgehalten."};
+  const chosen=new Set(); let mistakes=0;
+  for(;;){
+    const rem=[...good.filter(x=>!chosen.has(x)),...Object.keys(bad)]; shuffle(rem);
+    const opts=[...rem,"Angebot abschicken"]; const i=await choose(opts); const o=opts[i];
+    if(o==="Angebot abschicken"){
+      if(chosen.size===good.length){ break; }
+      await say("kim","Halt. Die Checkliste Vertragsgestaltung sagt: Da fehlt noch etwas. "+(good.length-chosen.size)+" Punkt"+(good.length-chosen.size===1?"":"e")+" offen.");
+      continue;
+    }
+    if(bad[o]){ mistakes++; await say("kim",bad[o]); continue; }
+    chosen.add(o); await say("kim",o+". Rein damit.");
+  }
+  if(mistakes===0) addScore(20); else if(mistakes===1) addScore(10);
+  flag("angebot");
+  await say("computer","Angebot versendet: Vor-Ort-Begehung mit Datenaufnahme, iSFP. 1.900 € netto zzgl. 19 % MwSt. Förderhinweis: BAFA-Zuschuss, Antrag vor Vertragsschluss.");
+  await say("telefon","Ring. Ring.");
+  await say("weber","Weber hier! Angebot angenommen. Und den BAFA-Antrag habe ich online gestellt – mit Ihrer Beraternummer, wie besprochen.");
+  await say("kim","Förderung beantragt, bevor der Vertrag steht. Genau richtig herum. Dann unterschreiben Sie den Vertrag und schicken ihn zurück, und ich komme zur Begehung.");
+  await say("weber","Mühlenweg 4. Linie 823 hält direkt davor.");
+  await say("kim","Bevor ich fahre: Bin ich versichert? Verstöße vor Vertragsbeginn sind nicht versichert.");
+}
+
+/* ===================== Skripte: Telefon ===================== */
+async function telefon(){
+  if(F("callDone")){ await say("kim","Herr Weber hat alles, was er braucht."+(F("angebot")?"":" Jetzt fehlt nur noch mein Angebot. Das schreibe ich am Computer.")); return; }
+  if(!F("weberTipp")){ await say("kim","Niemand ruft an. Ist ja auch niemand, der weiß, dass es mich gibt."); await say("kim","Ich sollte raus. Leute treffen. Gefunden werden."); return; }
+  await say("telefon","Ring. Ring.");
+  await say("kim","Kelvin, Energieberatung?");
+  const turns=[
+    ["Guten Tag, Weber mein Name. Frau Ruß hat Sie empfohlen. Ich habe ein Mehrfamilienhaus mit vier Wohnungen, und die Energiekosten sind explodiert. Können Sie mir helfen?",
+     [["Gerne. Darf ich fragen, in welchem Verhältnis Sie zum Gebäude stehen? Sie sind Eigentümer, wohnen aber selbst nicht darin?",true,[2],"Genau. Vermietet, alle vier."],
+      ["Klar, ich komme morgen vorbei und schaue mir das an.",false,[],"Morgen? Äh. Und was kostet das?"],
+      ["Das wird teuer. Haben Sie schon andere Angebote?",false,[],"Ich habe gerade erst angefangen zu suchen ..."]]],
+    ["Was würden Sie mir denn vorschlagen?",
+     [["Zuerst eine Ortsbegehung, dann einen individuellen Sanierungsfahrplan. Der iSFP zeigt Einzelmaßnahmen Schritt für Schritt – oder die Komplettsanierung.",true,[],"Ein Fahrplan. Das klingt vernünftig."],
+      ["Neue Fenster. Das bringt bei so einem Haus am meisten.",false,[],"Ohne es gesehen zu haben?"],
+      ["Dafür bräuchte ich erst mal alle Heizkostenabrechnungen der letzten zehn Jahre.",false,[],"Zehn Jahre? Ich finde nicht mal die letzte."]]],
+    ["Und wie geht es dann weiter?",
+     [["Hatten Sie schon einmal eine Energieberatung? Und welchen Umfang stellen Sie sich vor – einzelne Schritte oder alles auf einmal?",true,[0,3],"Nein, noch nie. Und eher schrittweise. Alles auf einmal kann ich nicht stemmen."],
+      ["Sie unterschreiben den Vertrag, dann beantrage ich die Förderung für Sie.",false,[],"Erst unterschreiben? Hm."],
+      ["Ich schicke Ihnen eine Rechnung für den ersten Termin.",false,[],"Eine Rechnung? Vor dem Angebot?"]]],
+    ["Was kostet das Ganze bei Ihnen?",
+     [["Ich schicke Ihnen ein Angebot für den Vor-Ort-Termin plus eine Checkliste zum Ausfüllen. Wichtig: Die Förderung für die Beratung muss beantragt sein, bevor wir den Vertrag schließen.",true,[4,5],"Förderung für die Beratung? Wie funktioniert das?"],
+      ["Das sehen wir dann.",false,[],"Ich hätte gern eine Zahl."],
+      ["Lassen Sie uns das gleich am Telefon fix machen, die Förderung kläre ich später.",false,[],"Und wenn die Förderung dann nicht klappt?"]]],
+    ["Wie läuft das mit der Förderung?",
+     [["Sie stellen den Antrag online beim BAFA und geben dabei meine Beraternummer an. Danach schicken Sie mir den unterschriebenen Vertrag zurück.",true,[],"BAFA, Beraternummer, dann Vertrag. Notiert."],
+      ["Das mache ich komplett für Sie. Sie müssen gar nichts tun.",false,[],"Gar nichts? Das kommt mir zu einfach vor."],
+      ["Das klären wir dann irgendwann beim Termin.",false,[],"Irgendwann?"]]],
+    ["Wann könnten wir starten?",
+     [["Wann soll es losgehen, und bis wann soll es abgeschlossen sein? Dann schlage ich Termine vor. Ich brauche noch die Adresse des Objekts.",true,[1],"Am liebsten vor dem Winter. Mühlenweg 4. Schicken Sie mir Termine."],
+      ["Ich melde mich dann mal.",false,[],"Ja ... gut. Bis dann."],
+      ["Morgen früh um sieben stehe ich vor der Tür.",false,[],"Um sieben? Ich wohne gar nicht dort."]]]
+  ];
+  const infos=["Umfang","Zeitrahmen","Verhältnis zum Gebäude","frühere Beratung","Kosten","Bedingungen"];
+  let good=0; const got=new Set();
+  for(const [them,opts] of turns){
+    await say("weber",them);
+    const order=shuffle(opts.map((o,i)=>i)); const pick=await choose(order.map(i=>opts[i][0])); const o=opts[order[pick]];
+    await say("kim",o[0]); if(o[1]){ good++; o[2].forEach(x=>got.add(x)); } await say("weber",o[3]);
+  }
+  await say("weber","Dann schicken Sie mir das Angebot. Auf Wiederhören!");
+  flag("callDone"); addScore(good*5);
+  const missing=infos.filter((_,i)=>!got.has(i));
+  if(missing.length===0) await say("kim","Alle sechs Erstinformationen eingeholt: Umfang, Zeitrahmen, Verhältnis zum Gebäude, frühere Beratung, Kosten, Bedingungen. Der Leitfaden hat sich gelohnt.");
+  else await say("kim","Nicht eingeholt: "+missing.join(", ")+". Das frage ich beim nächsten Kontakt nach. Ein Leitfaden hätte geholfen.");
+  await say("kim","Jetzt das Angebot schreiben. Am Computer.");
+}
+
+/* ===================== Skripte: Versicherung ===================== */
+async function praemie(){
+  if(F("insured")){ await say("praemie","Sie sind versichert, Kim. Betriebshaftpflicht und Vermögensschadenhaftpflicht, mit Nachhaftung. Gehen Sie Fenster öffnen."); return; }
+  await say("praemie","Willkommen bei Assekuranz Prämie. Sie sehen aus, als hätten Sie gerade ein Zertifikat bekommen.");
+  await say("kim","Sieht man das?");
+  await say("praemie","Der Blick. Alle haben diesen Blick. Bevor ich Ihnen etwas verkaufe: vier Fragen.");
+  await quiz("praemie","Erstens: Welche Leistungen bieten Sie an?",["Energieberatung, iSFP, Baubegleitung, Förderanträge. Und Energieausweise.","Alles, was Geld bringt.","Weiß ich noch nicht so genau."],0,"Dann kann ich Sie nicht versichern. Es liegt in Ihrer Verantwortung zu wissen, welche Felder abgedeckt sein müssen.","Gut. Energieberatung, Baubegleitung und Fördermittel müssen alle in der Police stehen.");
+  await quiz("praemie","Zweitens: Ihr Hauptgeschäftsfeld? Energieberatung mit Ingenieurleistungen – oder Ingenieurbüro mit Energieberatung?",["Energieberatung ist das Hauptgeschäft. Ingenieurleistungen kommen dazu.","Ist doch egal, das ist dasselbe.","Hauptgeschäftsfeld? Ich bin allein."],0,"Das ist versicherungstechnisch nicht egal. Es entscheidet, welche Police überhaupt passt.","Notiert. Wer HOAI-pflichtige Nachweise erbringt, sollte die HOAI-Felder 1 bis 9 mitversichern. Das geht auch ohne Architektentitel.");
+  await quiz("praemie","Drittens: Welche Risiken wollen Sie abdecken, und wie hoch ist das Schadenspotenzial?",["Beratungsfehler, die erst später sichtbar werden. Und Sach- und Personenschäden bei Begehungen.","Nur Sachschäden. Beraten kann ich fehlerfrei.","Risiken? Ich bin vorsichtig."],0,"Jeder ist vorsichtig, bis der Blumenkasten fällt. Denken Sie noch einmal nach.","Beide Welten. Gut.");
+  await quiz("praemie","Viertens: Welchen Umsatz erwarten Sie im Geschäftsjahr?",["Realistisch: ein paar Projekte im ersten Jahr. Ich nenne Ihnen eine Zahl.","Millionen.","Umsatz ist Privatsache."],0,"Ohne Umsatzerwartung keine Prämie. Die hängt daran.","Danke. Jetzt ein Fall aus der Praxis.");
+  await quiz("praemie","Sie öffnen bei einer Begehung ein Fenster, um die Wanddicke zu messen, und stoßen einen Blumenkasten hinunter. Er trifft eine Person. Welche Police reguliert?",["Betriebshaftpflicht. Personenschaden, fahrlässig, Haftung nach § 823 BGB.","Vermögensschadenhaftpflicht. Ich war ja beruflich unterwegs.","Rechtsschutz. Die Person wird klagen."],0,"Nein. Personen- und Sachschäden sind Sache der Betriebshaftpflicht. Sie reguliert, wenn Sie nach § 823 BGB haften – also bei schuldhaftem Verhalten.","Richtig. Fahrlässigkeit ist die Außerachtlassung der gehörigen Sorgfalt. Sie wollten den Schaden nicht, aber er ist Ihrer.");
+  await quiz("praemie","Zweiter Fall: Ihre Dämmempfehlung verfehlt die Förderbedingungen. Zwei Jahre später verliert der Kunde den Zuschuss. Welche Police?",["Vermögensschadenhaftpflicht. Beratungsfehler, Verstoß-Theorie.","Betriebshaftpflicht. Ein Schaden ist ein Schaden.","Keine. Nach zwei Jahren ist das verjährt."],0,"Nein. Das ist ein Beratungsfehler, ein finanzieller Schaden. Dafür gibt es die Vermögensschadenhaftpflicht – ohne Sach- und Personenschadendeckung.","Richtig. Auslöser ist der Verstoß, nicht der spätere Schadenseintritt. Versichert sind Verstöße während der Vertragsdauer. Und die Police wehrt unberechtigte Forderungen ab: passiver Rechtsschutz.");
+  await quiz("praemie","Und wann schließen Sie ab? Vor oder nach dem ersten Projekt?",["Vorher. Verstöße vor Vertragsbeginn sind nicht versichert.","Nachher, wenn ich weiß, ob ich Fehler mache.","Wenn der erste Kunde klagt."],0,"Dann ist Ihr erstes Projekt ungedeckt. Für immer.","Richtig. Und achten Sie auf ausreichende Nachhaftung. Die Haftung kann auf Ihre Erben übergehen.");
+  await say("kim","Meine Erben bekommen einen Blumenkasten.");
+  await say("praemie","Mein Angebot: Betriebshaftpflicht plus Vermögensschadenhaftpflicht, inklusive Energieberatung, Baubegleitung, Fördermittel und HOAI-Felder 1 bis 9. 480 Euro im Jahr, mit Nachhaftung.");
+  for(;;){
+    const i=await ask(["Abschließen. Beides.","Erst mal nur die Betriebshaftpflicht.","Ich überlege noch."]);
+    if(i===0) break;
+    if(i===1) await say("praemie","Dann sind Ihre Beratungsfehler unversichert. Das Regelheft der EEE-Liste, Ziffer 1.1.2, verlangt eine Haftpflicht, die Beantragung, Planung und Durchführung der Förderprogramme abdeckt.");
+    else await say("praemie","Überlegen Sie schnell. Der erste Verstoß wartet nicht.");
+  }
+  pay(480); flag("insured");
+  await say("praemie","Unterschrieben. Die Prämie ist übrigens eine Betriebsausgabe. Steuerlich absetzbar.");
+  await say("kim","Ein bekanntes, kleines Risiko gegen ein unbekanntes getauscht. Jetzt kann der Blumenkasten kommen.");
+}
+
+/* ===================== Skripte: Kneipe ===================== */
+async function zimmermann(){
+  if(!F("zimHello")){ flag("zimHello"); await say("zimmermann","Zimmermann. Zimmerer. Ja, wirklich. Ich bin in jedem Dachstuhl der Stadt, bevor die Eigentümer wissen, dass sie einen haben."); await say("kim","Kim Kelvin, Energieberatung. Frisch zertifiziert."); }
+  const opts=["Was sehen Sie da oben so?","Was bin ich für Sie, in Akquise-Sprech?"]; if(has("visitenkarten")&&!F("zimKarte")) opts.push("Hier, meine Visitenkarte."); opts.push("Bis später.");
+  const i=await ask(opts);
+  if(i===0){ await say("zimmermann","Löcher. Feuchte Sparren. Und Dämmung, die keine ist. Am Mühlenweg 4 hat einer ein Loch im Dach, so groß wie ein Zollstock."); await say("kim","Mühlenweg 4. Merke ich mir."); }
+  else if(i===1){ await quiz("zimmermann","Na? Was bin ich?",["Ein Multiplikator. Aktive Akquise.","Ein passiver Kanal.","Konkurrenz."],0,"Falsch. Ich empfehle Leute weiter. Das nennt ihr Multiplikator. Und dass du zu mir kommst, ist aktiv.","Richtig. Zimmerer, Schornsteinfeger, Heizungsbauer. Wir sehen den Bedarf zuerst."); }
+  else if(opts[i]==="Hier, meine Visitenkarte.") await zimmermannKarte();
+}
+async function zimmermannKarte(){
+  if(F("zimKarte")){ await say("zimmermann","Hab ich schon. Sie klebt am Dachfenster."); return; }
+  flag("zimKarte"); addScore(10);
+  await say("zimmermann","„Kim Kelvin, Energieberatung.“ Gut. Wenn ich das nächste Mal ein Loch finde, kommst du dazu.");
+  await say("kim","Multiplikator gewonnen. Frau Ruß kennt angeblich jemanden mit einer Heizkostenabrechnung wie ein Roman.");
+}
+async function russ(){
+  if(F("weberTipp")){ await say("russ","Herr Weber hat deine Nummer. Wenn er nicht anruft, hat er sie verloren. Er verliert viel."); return; }
+  if(!F("russHello")){ flag("russHello"); await say("russ","Kim! Frisch zertifiziert? Ich kenne jemanden mit einem Mehrfamilienhaus und einer Heizkostenabrechnung wie ein Roman."); await say("kim","Wen?"); }
+  else await say("russ","Immer noch da? Immer noch keine Kunden?");
+  if(!F("listed")){ await say("russ","Sag ich nur, wenn du gelistet bist. Ich empfehle keine Leute, die keine Förderanträge stellen dürfen."); await say("kim","Ohne Eintrag auf der EEE-Liste keine Förderanträge. Ich weiß. Ich arbeite dran."); return; }
+  await say("russ","Gelistet, gut. Herr Weber, Mühlenweg 4. Vier Wohnungen, alle vermietet. Aber er googelt vorher. Steht dein Büro bei Google Maps?");
+  if(!F("maps")){ await say("kim","Noch nicht."); await say("russ","Dann findet er dich nicht mal, wenn ich ihm deinen Namen buchstabiere. Passive Akquise, Kim. Erst gefunden werden, dann empfohlen werden."); return; }
+  await say("kim","Steht es. Mit Öffnungszeiten und Foto vom Zollstock.");
+  flag("weberTipp"); addScore(10);
+  await say("russ","Dann gebe ich ihm deine Nummer. Aktiv und passiv, beides. So wird das was.");
+  await say("kim","Zurück ins Büro. Das Telefon könnte klingeln. Zum ersten Mal.");
+}
+async function arch(){
+  if(!F("archHello")){ flag("archHello"); await say("arch","Architektin. BDB, Bund Deutscher Baumeister. Wir suchen Energieberater:innen für Kooperationen."); await say("kim","Kim Kelvin. Ich suche Architekturbüros für Kooperationen. Das passt."); }
+  const i=await ask(["Wie findet man Sie eigentlich, offiziell?","Ich übe gerade: aktiv oder passiv.","Schönen Abend noch."]);
+  if(i===0) await quiz("arch","Sag du es mir. Wo findet man Architekturbüros und Bauingenieure?",["Über Kammern und Verbände, zum Beispiel den BDB.","Über das DIBt.","Über das BAFA."],0,"Das ist eine Behörde. Die vermittelt keine Büros.","Richtig. Kammern und Verbände.");
+  else if(i===1) await quiz("arch","Vier Maßnahmen, eine ist passiv: Messe besuchen, Zimmerer ansprechen, Google-Maps-Eintrag, Social-Media-Beitrag schreiben.",["Der Google-Maps-Eintrag.","Die Messe.","Der Social-Media-Beitrag."],0,"Nein. Das ist aktiv – du gehst auf Leute zu. Passiv heißt: du wirst gefunden.","Richtig. Eintrag anlegen, gefunden werden. Die Webseite und die EEE-Liste zählen genauso.");
+}
+
+/* ===================== Skripte: Bus & Weber ===================== */
+async function bus(){
+  if(!F("angebot")){ await say("kim","Linie 823 zum Mühlenweg. Aber ohne Auftrag fahre ich zu niemandem nach Hause. Das wäre Akquise per Überfall."); return; }
+  if(!F("insured")){ await say("kim","Moment. Ohne Versicherung fahre ich zu keiner Begehung. Verstöße vor Vertragsbeginn sind nicht versichert. Erst zu Frau Prämie."); return; }
+  if(!has("checkliste")){ await say("kim","Ohne Checkliste Datenaufnahme fahre ich nicht los. Die gibt es beim Gebäudeforum, am Computer."); return; }
+  await say("bus","Linie 823, Richtung Mühlenweg. Einsteigen bitte.");
+  go("weber",40);
+}
+async function fensterOeffnen(){
+  if(F("kastenDown")){ await say("kim","Das Fenster ist schon offen. Und der Blumenkasten unten."); return; }
+  await say("kim","Ich öffne das Fenster, um die Wanddicke in der Laibung zu messen ...");
+  flag("fensterOpen"); await say("kim","Vorsichtig. Ganz vorsichtig. Da steht ein Blumenkasten.");
+  await new Promise(res=>{ blumenkasten={y:108,res}; });
+  flag("kastenDown");
+  await say("weber","Mein Blumenkasten!");
+  await say("kim","Ist jemand getroffen?");
+  await say("weber","Nein. Nur der Gehweg. Und meine Geranien.");
+  await say("kim","Dann ist es, laut Kurs, noch kein Schadensfall. Erst das Treffen einer Person macht ihn dazu.");
+  await say("weber","Und wenn?");
+  await say("kim","Dann § 823 BGB: fahrlässig, Personenschaden, Betriebshaftpflicht. Die habe ich. Seit gestern.");
+  await say("weber","Sie haben Glück, dass ich Sie mag.");
+  addScore(10);
+  await say("kim","Fenster ist offen. Jetzt den Zollstock an die Laibung.");
+}
+async function weberTalk(){
+  if(!F("kameraDone")){
+    await say("weber","Sehen Sie sich das an! Meine neue Wärmebildkamera. Alles rot! Das Haus verliert überall Wärme!");
+    give("kamera");
+    await quiz("weber","Also? Sofort alles dämmen?",["Ohne die passenden Randbedingungen und ohne Schulung werden die Bilder schnell fehlinterpretiert. Rot heißt hier: Die Sonne hat die Fassade aufgeheizt.","Oh nein! Ja, sofort alles dämmen!","Schöne Kamera. Was hat die gekostet?"],0,"Sie sind der Berater, nicht ich. Was sagt die Kamera wirklich?","Aha. Also Nachtaufnahme im Winter, mit Temperaturdifferenz. Und jemand, der das gelernt hat.");
+    flag("kameraDone"); take("kamera");
+    await say("kim","Thermografie findet Wärmelecks und Schäden früh. Aber nur mit den richtigen Randbedingungen. Ich gebe sie Ihnen zurück, Herr Weber.");
+    checkEnd(); return;
+  }
+  const opts=["Was ist Ihr Sanierungsziel?","Haben Sie Sonderwünsche?","Wie geht es nach heute weiter?"]; if(has("checkliste")&&!F("checklisteDone")) opts.push("Gehen wir die Checkliste durch."); opts.push("Ich schaue mich weiter um.");
+  const i=await ask(opts);
+  if(i===0){ flag("ziel"); await say("weber","Weniger Kosten. Und die Mieter sollen nicht frieren. Am liebsten, ohne dass die Miete explodiert."); await say("kim","Sanierungsziel bestimmt: Kosten runter, Komfort rauf, schrittweise. Das passt zum iSFP."); }
+  else if(i===1){ await say("weber","Die Fassade soll gelb bleiben. Meine Frau mag gelb."); await say("kim","Was Kund:innen wünschen und was möglich ist, deckt sich nicht immer. Aber gelb geht. Auch gedämmt."); }
+  else if(i===2){ await say("kim","Ich werte die Daten aus, erstelle den iSFP und wir besprechen Fördermittel: BAFA für die Beratung, BEG für die Maßnahmen. Die nächsten Schritte stehen dann im Fahrplan."); await say("weber","Und die Wärmebrücke?"); await say("kim","Das Geheimnis der Wärmebrücke lüften wir im Fahrplan."); }
+  else if(opts[i]==="Gehen wir die Checkliste durch.") await datenaufnahme();
+}
+async function datenaufnahme(){
+  if(F("checklisteDone")){ await say("kim","Checkliste ist voll. Baujahr, Wohnungen, Heizung, Fenster, Verbrauch."); return; }
+  await say("kim","Checkliste Datenaufnahme. Herr Weber, ein paar Fragen.");
+  await say("kim","Baujahr?"); await say("weber","1968. Vollziegel, sagt der Zimmerer.");
+  await say("kim","Heizung?"); await say("weber","Gas, 1994. Sie hören sie bis hier.");
+  await say("kim","Fenster?"); await say("weber","1998, zweifach. Bis auf das mit dem Blumenkasten. Das ist original.");
+  await say("kim","Verbrauch?"); await say("weber","Zu viel. Die Abrechnungen bringe ich Ihnen. Alle.");
+  flag("checklisteDone"); addScore(10);
+  await say("kim","Datenaufnahme erledigt. Die Begehung ist der beste Zeitpunkt dafür: Alles vor Ort prüfen, nichts schätzen.");
+  checkEnd();
+}
+function checkEnd(){ if(F("kameraDone")&&F("checklisteDone")&&F("fensterDone")&&F("heizungDone")&&F("dachDone")&&!F("finale")){ flag("finale"); setTimeout(finale,200); } }
+async function finale(){
+  busy=true;
+  await say("kim","Daten erfasst. Ziel bestimmt. Förderung beantragt. Blumenkasten überlebt.");
+  await say("weber","Und jetzt?");
+  await say("kim","Jetzt schreibe ich Ihren Sanierungsfahrplan. Und Sie kaufen neue Geranien.");
+  await say("weber","Sie sind gut, Kelvin. Ich empfehle Sie weiter. Frau Ruß auch.");
+  await say("kim","Mein erstes Projekt. Und der zweite Kunde kommt schon per Multiplikator.");
+  ended=true; flag("ended"); save();
+  showEnd();
+}
+
+/* ===================== Overlays ===================== */
+function overlay(html){ const o=$("overlay"); o.innerHTML=html; o.hidden=false; }
+function hideOverlay(){ $("overlay").hidden=true; $("overlay").innerHTML=""; }
+function showTitle(){
+  overlay('<h1>Das Geheimnis der Wärmebrücke</h1><p>Ein Point-and-Click-Abenteuer vom Zertifikat zum ersten Projekt.</p><p>Du bist Kim Kelvin, frisch zertifiziert, Konto 1.500 Euro, Kunden: null. Finde den Weg zum ersten Auftrag – über Listung, Registrierung, Versicherung und Akquise bis zur Begehung.</p><button class="big" type="button" id="btnStart">'+(S.started?"Weiterspielen":"Spiel starten")+'</button>');
+  $("btnStart").onclick=()=>{ hideOverlay(); S.started=true; save(); go(S.room,S.px,true); const rm=room(); if(rm.onEnter) run(rm.onEnter); };
+}
+function showHelp(){
+  overlay('<div class="card"><h1 style="font-size:30px">So spielst du</h1><ul><li>Klicke ein Verb, dann etwas im Bild. Ohne Verb passiert das Naheliegende.</li><li>„Benutze“ + Inventar + Ziel: zum Beispiel Zollstock mit Fenster.</li><li>Klick ins Bild oder Leertaste: Text weiter. Zahlen 1–4 wählen Antworten.</li><li>Richtige Antworten beim ersten Versuch geben Punkte. Falsche kosten nur Zeit.</li><li>Das Notizbuch zeigt, was noch zu tun ist. Gespeichert wird automatisch.</li></ul><button class="big" type="button" id="btnClose">Weiter</button></div>');
+  $("btnClose").onclick=hideOverlay;
+}
+function showNotes(){
+  const todo=[["Auf der EEE-Liste eintragen (zwei Dokumente, Gebühren)",F("listed")],["Beim DIBt registrieren (Energieausweise)",F("dibt")],["Versicherungen abschließen, bevor es losgeht",F("insured")],["Gefunden und empfohlen werden (Kneipe, Google Maps)",F("weberTipp")],["Kundengespräch führen und Angebot schreiben",F("angebot")],["Vor-Ort-Begehung am Mühlenweg 4",F("finale")]];
+  overlay('<div class="card"><h1 style="font-size:30px">Notizbuch</h1><ul>'+todo.map(([t,d])=>'<li style="color:'+(d?"#6fd67f":"#e9e6d6")+'">'+(d?"[x] ":"[ ] ")+t+'</li>').join("")+'</ul><p style="font-size:17px;color:#8d8aa8">Merksatz des Tages: Es liegt in der eigenen Verantwortung zu klären, welche Felder versichert sein müssen.</p><button class="big" type="button" id="btnClose">Zurück</button></div>');
+  $("btnClose").onclick=hideOverlay;
+}
+function showEnd(){
+  overlay('<div class="card"><h1 style="font-size:34px">Erstes Projekt gestartet</h1><p>Punkte: <b style="color:#ffd166">'+S.score+'</b> &nbsp; Konto: <b style="color:#ffd166">'+money(S.konto)+'</b></p><ul><li>Ohne EEE-Listung keine Förderanträge. Früh registrieren, Profil pflegen.</li><li>Energieausweise: DIBt-Konto, 6,90 € je Nummer, drei Kontrollstufen.</li><li>Beratungsfehler: Vermögensschadenhaftpflicht. Blumenkasten: Betriebshaftpflicht. Beides vor dem ersten Projekt.</li><li>Akquise: aktiv und passiv, beides.</li><li>Kundengespräch mit Leitfaden, Förderung vor Vertragsschluss, Angebot klar.</li><li>Die Begehung ist der beste Zeitpunkt für Daten. Wärmebilder brauchen Schulung.</li></ul><button class="big" type="button" id="btnAgain">Noch einmal spielen</button></div>');
+  $("btnAgain").onclick=()=>{ if(confirm("Spielstand löschen und neu beginnen?")){ S=fresh(); ended=false; save(); hud(); renderInv(); showTitle(); } };
+}
+
+/* ===================== Eingabe ===================== */
+function renderVerbs(){ const v=$("verbs"); v.innerHTML=""; VERBS.forEach(([k,l])=>{ const b=document.createElement("button"); b.type="button"; b.textContent=l; b.className=verb===k?"on":""; b.onclick=()=>{ verb=verb===k?null:k; useItem=null; renderVerbs(); sentence(); }; v.append(b); }); }
+function renderInv(){ const v=$("inv"); v.innerHTML=""; if(!S.inv.length){ v.innerHTML='<div class="empty">Inventar leer</div>'; return; } S.inv.forEach(i=>{ const b=document.createElement("button"); b.type="button"; b.textContent=ITEMS[i].n; b.className=useItem===i?"on":""; b.onclick=()=>invClick(i); v.append(b); }); }
+function sentence(h){ const vl=verb?VERBS.find(v=>v[0]===verb)[1]:""; const it=useItem?ITEMS[useItem].n+" mit":""; const t=[vl,it,h?h.n:""].filter(Boolean).join(" "); $("sentence").textContent=t||" "; }
+async function invClick(i){
+  if(busy) return;
+  if(verb==="benutze"){ useItem=useItem===i?null:i; renderInv(); sentence(); return; }
+  if(verb==="gehe"||verb==="rede"||verb==="oeffne"){ verb=null; renderVerbs(); }
+  if(verb==="nimm"){ verb=null; renderVerbs(); await run(()=>say("kim","Habe ich schon.")); return; }
+  await run(()=>say("kim",ITEMS[i].d));
+}
+async function run(fn){ busy=true; try{ await fn(); } finally{ busy=false; verb=null; useItem=null; renderVerbs(); renderInv(); sentence(hover); } }
+function hotAt(x,y){ const hs=room().hot.filter(h=>!h.cond||h.cond()); for(let i=hs.length-1;i>=0;i--){ const h=hs[i]; if(x>=h.x&&x<=h.x+h.w&&y>=h.y&&y<=h.y+h.h) return h; } return null; }
+function canvasPos(e){ const r=cv.getBoundingClientRect(); const p=e.touches?e.touches[0]:e; return {x:(p.clientX-r.left)/r.width*W,y:(p.clientY-r.top)/r.height*H}; }
+cv.addEventListener("mousemove",e=>{ const {x,y}=canvasPos(e); hover=hotAt(x,y); cv.classList.toggle("hot",!!hover); if(!busy) sentence(hover); });
+cv.addEventListener("click",e=>{
+  if(speechRes){ speechRes(); return; }
+  if(busy) return;
+  const {x,y}=canvasPos(e); const h=hotAt(x,y);
+  if(!h){ walkTo(x,null); verb=null; useItem=null; renderVerbs(); renderInv(); sentence(); return; }
+  const v=verb||h.def||"schau";
+  const target=h.walk??x;
+  if(v==="gehe"&&!h.gehe){ walkTo(target, h.exit?()=>go(h.exit.room,h.exit.x):null); verb=null; renderVerbs(); sentence(); return; }
+  const item=useItem;
+  walkTo(target, ()=>run(async()=>{
+    if(item){ if(h.use) await h.use(item); else await say("kim","Das passt nicht zusammen."); return; }
+    const fn=h[v];
+    if(fn) await fn(); else await say("kim",{schau:"Nichts Besonderes.",rede:"Es antwortet nicht. Ich rede weiter mit mir selbst.",nimm:"Das nehme ich nicht mit.",benutze:"Das bringt nichts.",oeffne:"Das lässt sich nicht öffnen."}[v]);
+  }));
+  sentence(h);
+});
+$("speech").addEventListener("click",()=>{ if(speechRes) speechRes(); });
+document.addEventListener("keydown",e=>{ if(e.key===" "||e.key==="Enter"){ if(speechRes){ e.preventDefault(); speechRes(); } } else if(/^[1-9]$/.test(e.key)&&chooseRes){ chooseRes(+e.key-1); } });
+$("btnHelp").onclick=showHelp; $("btnNotes").onclick=showNotes;
+$("btnNew").onclick=()=>{ if(confirm("Spielstand löschen und neu beginnen?")){ S=fresh(); ended=false; save(); hud(); renderInv(); showTitle(); } };
+
+/* ===================== Bewegung & Schleife ===================== */
+function walkTo(x,cb){ x=Math.max(12,Math.min(W-12,x)); walking={tx:x,cb}; if(x!==S.px) S.dir=x>S.px?1:-1; }
+function go(r,x,silent){
+  const doIt=()=>{ S.room=r; S.px=x; walking=null; hover=null; save(); const rm=room(); if(rm.onEnter&&!silent) run(rm.onEnter); };
+  if(silent){ doIt(); return; }
+  fade=1; setTimeout(doIt,220);
+}
+function loop(){
+  frame++;
+  if(walking){ const dx=walking.tx-S.px; if(Math.abs(dx)<=1.6){ S.px=walking.tx; const cb=walking.cb; walking=null; save(); if(cb) cb(); } else S.px+=Math.sign(dx)*1.6; }
+  if(blumenkasten){ blumenkasten.y+=2.2; if(blumenkasten.y>=152){ const r=blumenkasten.res; blumenkasten=null; r(); } }
+  const rm=room(); rm.draw();
+  rm.npcs.forEach(n=>person(n.x,n.fy,NPC[n.k],0,n.dir));
+  if(S.room==="versicherung") R(150,118,160,34,"#7a4b2a"), R(148,114,164,6,"#5a3a1a"), R(160,124,40,16,"#fff"), T(180,136,"PRÄMIE","#7a4b2a",10);
+  person(S.px,rm.floorY,KIM,walking?Math.floor(frame/6):0,S.dir);
+  if(fade>0){ g.fillStyle="rgba(0,0,0,"+fade+")"; g.fillRect(0,0,W,H); fade-=0.06; }
+  requestAnimationFrame(loop);
+}
+
+/* ===================== Start ===================== */
+function boot(hot){
+  load(); if(hot&&hot.room) S=Object.assign(fresh(),hot);
+  ended=!!S.flags.ended; hud(); renderVerbs(); renderInv(); sentence();
+  window.claude?.hot?.snapshot?.(()=>S);
+  loop();
+  if(ended) showEnd(); else showTitle();
+}
+document.fonts.ready.then(()=>{ window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? null); });
+</script>
+</body>
+</html>
