@@ -1,72 +1,60 @@
-# Vom Zertifikat zum ersten Projekt
+# Das Geheimnis der Wärmebrücke
 
-Ein browserbasiertes Lernspiel zu **Paket 5, Block 8 Teil 1** (Listung · Energieausweise ·
-Versicherungen · Akquise · Kundengespräch & Angebot · Vor-Ort-Begehung).
+Ein Point-and-Click-Adventure im Stil der alten LucasArts-Spiele zu **Paket 5, Block 8 Teil 1**
+(Listung · Energieausweise · Versicherungen · Akquise · Kundengespräch & Angebot · Vor-Ort-Begehung).
 
-Gedacht für die Lerngruppe: einmal durchspielen dauert rund 20–30 Minuten, jede Aufgabe
-liefert die fachliche Erklärung gleich mit.
+Du spielst Kim Kelvin: frisch zertifiziert, Konto 1.500 Euro, Kunden null. Ziel ist das erste
+Projekt. Der Weg dorthin führt durch die Inhalte der Unterlage, verpackt als Rätsel, Dialoge
+und einen Blumenkasten.
 
 ## Nutzen
 
-Die Datei `index.html` ist vollständig eigenständig — kein Build, kein Server, keine
-Abhängigkeiten außer den Webfonts. Öffnen genügt:
+`index.html` ist vollständig eigenständig, kein Build, kein Server. Öffnen genügt. Zum Teilen
+reicht es, den Ordner zu verschicken oder als statische Seite zu hosten (GitHub Pages, Netlify,
+beliebiger Webspace).
 
-```
-open index.html          # macOS
-xdg-open index.html      # Linux
-```
+| Datei | Inhalt |
+|---|---|
+| `index.html` | Das Adventure (Canvas-Pixelgrafik, Verben, Inventar, Dialoge) |
+| `quiz.html` | Das Stationen-Quiz mit 29 Aufgaben in zehn Formaten, als schneller Wiederholungsmodus |
 
-Zum Teilen reicht es, die Datei zu verschicken oder als statische Seite zu hosten
-(GitHub Pages, Netlify, beliebiger Webspace).
+## Ablauf des Abenteuers
 
-## Aufbau
+Fünf Schauplätze: dein Büro, der Marktplatz, das Versicherungsbüro „Assekuranz Prämie“, die
+Kneipe „Zum Wärmeleck“ mit GIH-Stammtisch und das Mehrfamilienhaus am Mühlenweg 4.
 
-Sechs Stationen folgen dem roten Faden der Unterlage: Was muss ich nach dem Kurs
-administrativ erledigen, wie komme ich an den ersten Kunden, wie starte ich das erste
-Projekt sauber?
+1. **Listung.** Zeugnis und Formular finden, auf der EEE-Liste hochladen, die richtigen Gebühren
+   berechnen, ein Profil wählen, das jemand anrufen würde.
+2. **DIBt.** Drei Kontrollfragen zu Registriernummer und Kontrollstufen, dann bestellen.
+3. **Versicherung.** Frau Prämie stellt die vier Vorbereitungsfragen, dann den Blumenkasten-Fall
+   und die Verstoß-Theorie. Ohne Police fährt Kim zu keiner Begehung.
+4. **Akquise.** Frau Ruß empfiehlt nur Gelistete, und nur, wenn man bei Google Maps zu finden ist.
+   Zimmerer und Architektin sind Multiplikatoren.
+5. **Kundengespräch.** Herr Weber ruft an. Sechs Gesprächszüge, am Ende die Bilanz der sechs
+   Erstinformationen. Danach das Angebot am Computer zusammenstellen.
+6. **Begehung.** Wärmebildkamera einordnen, Fenster öffnen (Blumenkasten), Wanddicke messen,
+   Dach und Keller ansehen, Checkliste Datenaufnahme durchgehen.
 
-| # | Station | Aufgaben |
-|---|---|---|
-| 1 | EEE-Liste | 5 |
-| 2 | Energieausweise | 5 |
-| 3 | Versicherungen | 7 |
-| 4 | Akquise | 4 |
-| 5 | Erstes Projekt | 4 |
-| 6 | Vor-Ort-Begehung | 4 |
-
-Insgesamt 29 Aufgaben, 290 Punkte. Nach jeder Station erscheinen die Merksätze des
-Kapitels, am Ende eine Auswertung je Station mit Rang.
-
-## Aufgabentypen
-
-- **Auswahl / Mehrfachauswahl** — klassische Wissensfragen mit Erklärung
-- **Richtig oder falsch** — Schnellcheck über mehrere Aussagen
-- **Zuordnen** — Karten in zwei Töpfe sortieren (z. B. Betriebshaftpflicht vs. Vermögensschadenhaftpflicht)
-- **Paare finden** — Versicherung ↔ Zweck, Checkliste ↔ Herausgeber
-- **Reihenfolge** — die vier Schritte des ersten Projekts
-- **Kostenrechner** — Beiträge der EEE-Listung selbst ausrechnen, mit Auflösung als Rechenweg
-- **Kundengespräch** — sechs Gesprächszüge als Dialog, am Ende die Bilanz der sechs Erstinformationen
-- **Fehlersuche** — drei fehlerhafte Zeilen in einem Angebotsentwurf markieren
-- **Profil-Vergleich** — zwei EEE-Profile nebeneinander, welches ruft man an?
+Richtige Antworten beim ersten Versuch geben Punkte, falsche kosten nur Zeit. Das Notizbuch
+zeigt die offenen Aufgaben. Gespeichert wird automatisch im Browser.
 
 ## Einsatz in der Gruppe
 
-- **Vor der Sitzung** als Selbststudium, danach nur noch die strittigen Punkte besprechen
-- **Live im Kurs** per Bildschirmfreigabe: Frage zeigen, Gruppe abstimmen lassen, dann auflösen —
-  besonders der Blumenkasten-Fall und der Profil-Vergleich funktionieren so gut
-- **Als Wettbewerb**: alle spielen allein, die Punktzahl wird über „Ergebnis kopieren" geteilt
+- Allein durchspielen dauert etwa 30 bis 40 Minuten.
+- Live im Kurs per Bildschirmfreigabe: Die Gruppe entscheidet gemeinsam, was Kim antwortet.
+- Das Quiz eignet sich als Wiederholung vor der Prüfung.
 
 ## Technik
 
-Eine HTML-Datei, Vanilla JavaScript, keine Frameworks. Punktestand und Fortschritt liegen
-in `localStorage` und damit nur im Browser der spielenden Person — es werden keine Daten
-übertragen. Die Oberfläche folgt dem Hell-/Dunkelmodus des Systems und funktioniert ab
-etwa 400 px Breite.
+Eine HTML-Datei je Modus, Vanilla JavaScript, Canvas 2D bei 320 × 180 Pixeln, hochskaliert.
+Alle Grafiken werden im Code gezeichnet, es gibt keine Bilddateien. Schriftart VT323 von Google
+Fonts mit Monospace-Fallback. Spielstand in `localStorage`, es werden keine Daten übertragen.
+
+Die Dialoge und Rätsel stehen in `index.html` als Skript-Funktionen (`eee`, `dibt`, `praemie`,
+`telefon`, `angebot`, `weberTalk` usw.), die Räume als Objekte im `ROOMS`-Block. Fragen lassen
+sich dort direkt ändern.
 
 ## Inhaltliche Grundlage
 
-Alle Fragen, Zahlen und Merksätze stammen aus der Zusammenfassung „Paket 5 — Block 8 Teil 1:
-Vom Zertifikat zum ersten Projekt" (Stand v3.0, 14.08.2026, Folien 9–35 und 60–64).
-Ändert sich die Unterlage, werden die Inhalte im `STATIONS`-Array am Anfang des
-`<script>`-Blocks in `index.html` angepasst — Fragen, Antworten und Erklärungen stehen dort
-als eine zusammenhängende Datenstruktur.
+Alle Zahlen, Paragrafen und Merksätze stammen aus der Zusammenfassung „Paket 5 — Block 8 Teil 1:
+Vom Zertifikat zum ersten Projekt“ (Stand v3.0, 14.08.2026, Folien 9–35 und 60–64).
