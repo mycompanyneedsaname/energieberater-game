@@ -15,9 +15,18 @@ beliebiger Webspace).
 
 | Datei | Inhalt |
 |---|---|
+| `folien/Block8_Vom_Zertifikat_zum_Projekt.pptx` | **Klassische Folien**, drei Minuten plus drei Quizfragen per Handzeichen, mit Sprechernotizen (auch als PDF) |
 | `live.html` | **Finger hoch**: fünf Fragen für fünf Minuten am Beamer, die Gruppe antwortet mit erhobenen Fingern |
 | `index.html` | Das Adventure (Canvas-Pixelgrafik, Verben, Inventar, Dialoge), etwa 30 bis 40 Minuten |
 | `quiz.html` | Das Stationen-Quiz mit 29 Aufgaben in zehn Formaten, als Wiederholung vor der Prüfung |
+
+## Drei Minuten im Kurs: die Folien
+
+13 Folien in `folien/`: Titel, Überblick über die sechs Stationen, vier Inhaltsfolien
+(Listung und Ausweise, Versicherung, Akquise und erstes Projekt, Begehung), dann drei Quizfragen
+mit jeweils einer Auflösungsfolie, zum Schluss die drei Kernaussagen. Die Sprechernotizen enthalten
+die Stichworte je Folie. Die Datei wird aus `folien/build.js` erzeugt (`node build.js`, benötigt
+`pptxgenjs`, `react-icons` und `sharp`).
 
 ## Fünf Minuten im Kurs: `live.html`
 
